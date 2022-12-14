@@ -1,0 +1,66 @@
+###findAll
+GET http://localhost:8080/product
+Accept: application/json
+
+###findById
+GET http://localhost:8080/product/2
+Accept: application/json
+
+###save #1
+POST http://localhost:8080/product
+Content-Type: application/json
+
+{
+  "quantity": 1,
+  "name": "Волшебный ящик, Grey",
+  "price": "1000.25",
+  "promotion": true
+}
+
+###save #2
+POST http://localhost:8080/product
+Content-Type: application/json
+
+{
+  "quantity": 3,
+  "name": "Самовар, золотой",
+  "price": "256.2",
+  "promotion": true
+}
+
+###save #3
+POST http://localhost:8080/product
+Content-Type: application/json
+
+{
+  "quantity": 2,
+  "name": "Перчатка, пара",
+  "price": "25.69",
+  "promotion": true
+}
+
+###save #4
+POST http://localhost:8080/product
+Content-Type: application/json
+
+{
+  "quantity": 4,
+  "name": "Лапша, Доширак",
+  "price": "78.11",
+  "promotion": false
+}
+
+###save #5
+POST http://localhost:8080/product
+Content-Type: application/json
+
+{
+  "quantity": 1,
+  "name": "Отвёртка, электр.",
+  "price": "40.89",
+  "promotion": false
+}
+
+### update
+PUT http://localhost:8080/product/?id=6&quantity=10
+Content-Type: application/json
