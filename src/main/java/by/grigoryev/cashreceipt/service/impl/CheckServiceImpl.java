@@ -2,12 +2,16 @@ package by.grigoryev.cashreceipt.service.impl;
 
 import by.grigoryev.cashreceipt.model.DiscountCard;
 import by.grigoryev.cashreceipt.model.Product;
+import by.grigoryev.cashreceipt.service.CheckService;
 import by.grigoryev.cashreceipt.service.DiscountCardService;
 import by.grigoryev.cashreceipt.service.ProductService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
@@ -19,12 +23,13 @@ import java.util.List;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class CheckServiceImpl {
+public class CheckServiceImpl implements CheckService {
 
     private final ProductService productService;
 
     private final DiscountCardService discountCardService;
 
+    @Override
     public String createCheck(String idAndQuantity, String discountCardNumber) {
         List<Product> products = new ArrayList<>();
         BigDecimal totalSum = new BigDecimal("0");
@@ -107,9 +112,24 @@ public class CheckServiceImpl {
                 .append("TOTAL PAID: ")
                 .append(totalSumWithDiscount.stripTrailingZeros());
 
+        uploadFile(checkBuilder.toString());
+
         log.info(checkBuilder.toString());
 
         return checkBuilder.toString();
+    }
+
+    private void uploadFile(String check) {
+        File currDir = new File(".");
+        String path = currDir.getAbsolutePath();
+        String fileLocation = path.substring(0, path.length() - 1) + "Check.txt";
+
+        try (FileOutputStream outputStream = new FileOutputStream(fileLocation)) {
+            outputStream.write(check.getBytes());
+            log.info("uploadFile {}", fileLocation);
+        } catch (IOException e) {
+            log.error(e.getMessage());
+        }
     }
 
 }

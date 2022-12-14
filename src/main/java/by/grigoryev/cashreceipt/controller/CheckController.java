@@ -1,6 +1,6 @@
 package by.grigoryev.cashreceipt.controller;
 
-import by.grigoryev.cashreceipt.service.impl.CheckServiceImpl;
+import by.grigoryev.cashreceipt.service.CheckService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/check")
 public class CheckController {
 
-    private final CheckServiceImpl cashReceiptService;
+    private final CheckService cashReceiptService;
 
     @GetMapping
     public ResponseEntity<String> createCheck(@RequestParam String idAndQuantity, String discountCardNumber) {
