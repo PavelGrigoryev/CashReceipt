@@ -3,7 +3,7 @@ GET http://localhost:8080/product
 Accept: application/json
 
 ###findById
-GET http://localhost:8080/product/2
+GET http://localhost:8080/product/7
 Accept: application/json
 
 ###save #1

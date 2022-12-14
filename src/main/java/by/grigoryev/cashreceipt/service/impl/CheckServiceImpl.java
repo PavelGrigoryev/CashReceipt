@@ -43,17 +43,13 @@ public class CheckServiceImpl {
         }
 
         DiscountCard discountCard = discountCardService.findByDiscountCardNumber(discountCardNumber);
-        BigDecimal totalSumWithDiscount;
-        BigDecimal discount;
 
-        discount = totalSum.divide(BigDecimal.valueOf(100), 4, RoundingMode.UP)
+        BigDecimal discount = totalSum.divide(BigDecimal.valueOf(100), 4, RoundingMode.UP)
                 .multiply(discountCard.getDiscountPercentage());
-        totalSumWithDiscount = totalSum.subtract(discount);
 
-        StringBuilder checkBuilder = new StringBuilder();
-        StringBuilder promoDiscBuilder = new StringBuilder();
+        BigDecimal totalSumWithDiscount = totalSum.subtract(discount);
 
-        checkBuilder.append("\n")
+        StringBuilder checkBuilder = new StringBuilder().append("\n")
                 .append("Cash Receipt")
                 .append("\n")
                 .append("DATE: ")
@@ -66,6 +62,8 @@ public class CheckServiceImpl {
                 .append("\n")
                 .append("QTY  DESCRIPTION     PRICE   TOTAL")
                 .append("\n");
+
+        StringBuilder promoDiscBuilder = new StringBuilder();
 
         for (Product product : products) {
             checkBuilder.append(product.getQuantity())

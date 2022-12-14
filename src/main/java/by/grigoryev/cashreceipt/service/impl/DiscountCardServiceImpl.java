@@ -1,5 +1,6 @@
 package by.grigoryev.cashreceipt.service.impl;
 
+import by.grigoryev.cashreceipt.exception.NoSuchDiscountCardException;
 import by.grigoryev.cashreceipt.model.DiscountCard;
 import by.grigoryev.cashreceipt.repository.DiscountCardRepository;
 import by.grigoryev.cashreceipt.service.DiscountCardService;
@@ -8,7 +9,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Slf4j
 @Service
@@ -26,16 +26,10 @@ public class DiscountCardServiceImpl implements DiscountCardService {
 
     @Override
     public DiscountCard findById(Long id) {
-        Optional<DiscountCard> optionalDiscountCard = discountCardRepository.findById(id);
-
-        if (optionalDiscountCard.isPresent()) {
-            DiscountCard discountCard = optionalDiscountCard.get();
-            log.info("findById {}", discountCard);
-            return discountCard;
-        } else {
-            throw new RuntimeException("No id");
-        }
-
+        DiscountCard discountCard = discountCardRepository.findById(id)
+                .orElseThrow(() -> new NoSuchDiscountCardException("DiscountCard with ID " + id + " does not exist"));
+        log.info("findById {}", discountCard);
+        return discountCard;
     }
 
     @Override
@@ -47,15 +41,11 @@ public class DiscountCardServiceImpl implements DiscountCardService {
 
     @Override
     public DiscountCard findByDiscountCardNumber(String discountCardNumber) {
-        Optional<DiscountCard> optionalDiscountCard = discountCardRepository.findByDiscountCardNumber(discountCardNumber);
-
-        if (optionalDiscountCard.isPresent()) {
-            DiscountCard discountCard = optionalDiscountCard.get();
-            log.info("findByDiscountCardNumber {}", discountCard);
-            return discountCard;
-        } else {
-            throw new RuntimeException("No card number");
-        }
+        DiscountCard discountCard = discountCardRepository.findByDiscountCardNumber(discountCardNumber)
+                .orElseThrow(() -> new NoSuchDiscountCardException("DiscountCard with card number " +
+                        discountCardNumber + " does not exist"));
+        log.info("findByDiscountCardNumber {}", discountCard);
+        return discountCard;
     }
 
 }

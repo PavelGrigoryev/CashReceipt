@@ -1,5 +1,6 @@
 package by.grigoryev.cashreceipt.service.impl;
 
+import by.grigoryev.cashreceipt.exception.NoSuchProductException;
 import by.grigoryev.cashreceipt.model.Product;
 import by.grigoryev.cashreceipt.repository.ProductRepository;
 import by.grigoryev.cashreceipt.service.ProductService;
@@ -9,7 +10,6 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.Optional;
 
 @Slf4j
 @Service
@@ -27,28 +27,15 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public Product findById(Long id) {
-        Optional<Product> optionalProduct = productRepository.findById(id);
-
-        if (optionalProduct.isPresent()) {
-            Product product = optionalProduct.get();
-            log.info("findById {}", product);
-            return product;
-        } else {
-            throw new RuntimeException("No id");
-        }
-
+        Product product = productRepository.findById(id)
+                .orElseThrow(() -> new NoSuchProductException("Product with ID " + id + " does not exist"));
+        log.info("findById {}", product);
+        return product;
     }
 
     @Override
     public Product save(Product product) {
-        Product savedProduct = Product.builder()
-                .quantity(product.getQuantity())
-                .name(product.getName())
-                .price(product.getPrice())
-                .total(product.getPrice().multiply(BigDecimal.valueOf(product.getQuantity())))
-                .promotion(product.getPromotion())
-                .build();
-
+        Product savedProduct = createProduct(product);
         productRepository.save(savedProduct);
         log.info("save {}", savedProduct);
         return savedProduct;
@@ -71,6 +58,16 @@ public class ProductServiceImpl implements ProductService {
             return product;
         }
 
+    }
+
+    private Product createProduct(Product product) {
+        return Product.builder()
+                .quantity(product.getQuantity())
+                .name(product.getName())
+                .price(product.getPrice())
+                .total(product.getPrice().multiply(BigDecimal.valueOf(product.getQuantity())))
+                .promotion(product.getPromotion())
+                .build();
     }
 
 }
