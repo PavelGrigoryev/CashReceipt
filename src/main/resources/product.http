@@ -23,7 +23,7 @@ Content-Type: application/json
 
 {
   "quantity": 3,
-  "name": "Самовар, золотой",
+  "name": "Самовар золотой",
   "price": "256.2",
   "promotion": true
 }
@@ -34,7 +34,7 @@ Content-Type: application/json
 
 {
   "quantity": 2,
-  "name": "Перчатка, пара",
+  "name": "Перчатка шерсть",
   "price": "25.69",
   "promotion": true
 }
@@ -45,7 +45,7 @@ Content-Type: application/json
 
 {
   "quantity": 4,
-  "name": "Лапша, Доширак",
+  "name": "Лапша съедобная",
   "price": "78.11",
   "promotion": false
 }
@@ -56,7 +56,7 @@ Content-Type: application/json
 
 {
   "quantity": 1,
-  "name": "Отвёртка, электр.",
+  "name": "Отвёртка электро",
   "price": "40.89",
   "promotion": false
 }

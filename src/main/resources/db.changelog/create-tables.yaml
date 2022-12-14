@@ -1,0 +1,50 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-discount-card
+      author: Pavel Grigoryev
+      changes:
+        - createTable:
+            tableName: discount_card
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    unique: true
+              - column:
+                  name: discount_card_number
+                  type: varchar(30)
+              - column:
+                  name: discount_percentage
+                  type: decimal
+  - changeSet:
+      id: create-product
+      author: Pavel Grigoryev
+      changes:
+        - createTable:
+            tableName: product
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    unique: true
+              - column:
+                  name: name
+                  type: varchar(50)
+              - column:
+                  name: price
+                  type: decimal
+              - column:
+                  name: promotion
+                  type: boolean
+              - column:
+                  name: quantity
+                  type: int
+              - column:
+                  name: total
+                  type: decimal
