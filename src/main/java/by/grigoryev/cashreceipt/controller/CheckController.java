@@ -1,6 +1,5 @@
 package by.grigoryev.cashreceipt.controller;
 
-import by.grigoryev.cashreceipt.dto.Check;
 import by.grigoryev.cashreceipt.service.impl.CheckServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -17,7 +16,7 @@ public class CheckController {
     private final CheckServiceImpl cashReceiptService;
 
     @GetMapping
-    public ResponseEntity<Check> createCheck(@RequestParam String idAndQuantity, String discountCardNumber) {
+    public ResponseEntity<String> createCheck(@RequestParam String idAndQuantity, String discountCardNumber) {
         return ResponseEntity.ok(cashReceiptService.createCheck(idAndQuantity, discountCardNumber));
     }
 

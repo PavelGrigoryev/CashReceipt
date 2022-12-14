@@ -21,7 +21,7 @@ public class DiscountCard {
     private Long id;
 
     @Column(name = "discount_card_number")
-    private String discountCardNumber; // todo поменять на Integer
+    private String discountCardNumber;
 
     @Column(name = "discount_percentage")
     private BigDecimal discountPercentage;

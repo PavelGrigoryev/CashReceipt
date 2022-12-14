@@ -1,6 +1,5 @@
 package by.grigoryev.cashreceipt.service.impl;
 
-import by.grigoryev.cashreceipt.dto.Check;
 import by.grigoryev.cashreceipt.model.DiscountCard;
 import by.grigoryev.cashreceipt.model.Product;
 import by.grigoryev.cashreceipt.service.DiscountCardService;
@@ -26,13 +25,12 @@ public class CheckServiceImpl {
 
     private final DiscountCardService discountCardService;
 
-    public Check createCheck(String idAndQuantity, String discountCardNumber) {
+    public String createCheck(String idAndQuantity, String discountCardNumber) {
         List<Product> products = new ArrayList<>();
         BigDecimal totalSum = new BigDecimal("0");
 
         String[] splitSpace = idAndQuantity.split(" ");
 
-        //3-1 2-6 5-1
         for (String string : splitSpace) {
             String[] splitHyphen = string.split("-");
             String id = splitHyphen[0];
@@ -52,36 +50,24 @@ public class CheckServiceImpl {
                 .multiply(discountCard.getDiscountPercentage());
         totalSumWithDiscount = totalSum.subtract(discount);
 
-        Check check = Check.builder()
-                .name("Cash Receipt")
-                .date(LocalDate.now())
-                .time(LocalTime.now())
-                .products(products)
-                .totalSum(totalSum)
-                .discountPercentage(discountCard.getDiscountPercentage())
-                .discount(discount.stripTrailingZeros())
-                .totalSumWithDiscount(totalSumWithDiscount.stripTrailingZeros())
-                .build();
-
         StringBuilder checkBuilder = new StringBuilder();
         StringBuilder promoDiscBuilder = new StringBuilder();
-        promoDiscBuilder.append("Promotional discount -10% for promotional products\n");
 
         checkBuilder.append("\n")
-                .append(check.getName())
+                .append("Cash Receipt")
                 .append("\n")
                 .append("DATE: ")
-                .append(check.getDate())
+                .append(LocalDate.now())
                 .append(" ")
                 .append("TIME: ")
-                .append(check.getTime().format(DateTimeFormatter.ofPattern("HH:mm:ss")))
+                .append(LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")))
                 .append("\n")
                 .append("-".repeat(50))
                 .append("\n")
                 .append("QTY  DESCRIPTION     PRICE   TOTAL")
                 .append("\n");
 
-        for (Product product : check.getProducts()) {
+        for (Product product : products) {
             checkBuilder.append(product.getQuantity())
                     .append("   ")
                     .append(product.getName())
@@ -98,10 +84,11 @@ public class CheckServiceImpl {
 
                 totalSumWithDiscount = totalSumWithDiscount.subtract(promotionDiscount);
 
-                promoDiscBuilder.append("with name \"")
+                promoDiscBuilder.append("PromoDiscount '-10%' for promotional products\n")
+                        .append("with name \"")
                         .append(product.getName())
                         .append("\"")
-                        .append(" more than 5 units: -")
+                        .append(" more than 5 items: -")
                         .append(promotionDiscount)
                         .append("\n");
             }
@@ -110,22 +97,21 @@ public class CheckServiceImpl {
 
         checkBuilder.append("=".repeat(50))
                 .append("\n")
-                .append("Price without discount: ")
-                .append(check.getTotalSum())
+                .append("TOTAL: ")
+                .append(totalSum)
                 .append("\n")
-                .append("DiscountCard -")
-                .append(check.getDiscountPercentage())
-                .append("%: -")
-                .append(check.getDiscount())
+                .append("DiscountCard '-")
+                .append(discountCard.getDiscountPercentage())
+                .append("%': -")
+                .append(discount.stripTrailingZeros())
                 .append("\n")
                 .append(promoDiscBuilder)
-                .append("TOTAL: ")
+                .append("TOTAL PAID: ")
                 .append(totalSumWithDiscount.stripTrailingZeros());
 
         log.info(checkBuilder.toString());
 
-
-        return check;
+        return checkBuilder.toString();
     }
 
 }

@@ -12,7 +12,7 @@ Content-Type: application/json
 
 {
   "quantity": 1,
-  "name": "Волшебный ящик, Grey",
+  "name": "Волшебный ящик",
   "price": "1000.25",
   "promotion": true
 }
