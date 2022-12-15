@@ -32,26 +32,10 @@ public class CheckServiceImpl implements CheckService {
     @Override
     public String createCheck(String idAndQuantity, String discountCardNumber) {
         List<Product> products = new ArrayList<>();
-        BigDecimal totalSum = new BigDecimal("0");
-        String[] splitSpace = idAndQuantity.split(" ");
-
-        for (String string : splitSpace) {
-            String[] splitHyphen = string.split("-");
-            String id = splitHyphen[0];
-            String quantity = splitHyphen[1];
-
-            Product product = productService.update(Long.valueOf(id), Integer.valueOf(quantity));
-
-            products.add(product);
-            totalSum = totalSum.add(product.getTotal());
-        }
+        BigDecimal totalSum = getTotalSum(idAndQuantity, products);
 
         DiscountCard discountCard = discountCardService.findByDiscountCardNumber(discountCardNumber);
-
-        BigDecimal discount = totalSum.divide(BigDecimal.valueOf(100), 4, RoundingMode.UP)
-                .multiply(discountCard.getDiscountPercentage());
-
-        BigDecimal totalSumWithDiscount = totalSum.subtract(discount);
+        BigDecimal discount = getDiscount(totalSum, discountCard);
 
         StringBuilder checkBuilder = new StringBuilder().append("\n")
                 .append("Cash Receipt")
@@ -68,6 +52,8 @@ public class CheckServiceImpl implements CheckService {
                 .append("\n");
 
         StringBuilder promoDiscBuilder = new StringBuilder();
+
+        BigDecimal totalSumWithDiscount = totalSum.subtract(discount);
 
         for (Product product : products) {
             checkBuilder.append(String.format(
@@ -114,6 +100,28 @@ public class CheckServiceImpl implements CheckService {
         log.info(checkBuilder.toString());
 
         return checkBuilder.toString();
+    }
+
+    private BigDecimal getTotalSum(String idAndQuantity, List<Product> products) {
+        String[] splitSpace = idAndQuantity.split(" ");
+        BigDecimal totalSum = new BigDecimal("0");
+
+        for (String string : splitSpace) {
+            String[] splitHyphen = string.split("-");
+            String id = splitHyphen[0];
+            String quantity = splitHyphen[1];
+
+            Product product = productService.update(Long.valueOf(id), Integer.valueOf(quantity));
+
+            products.add(product);
+            totalSum = totalSum.add(product.getTotal());
+        }
+        return totalSum;
+    }
+
+    private BigDecimal getDiscount(BigDecimal totalSum, DiscountCard discountCard) {
+        return totalSum.divide(BigDecimal.valueOf(100), 4, RoundingMode.UP)
+                .multiply(discountCard.getDiscountPercentage());
     }
 
     private void uploadFile(String check) {
