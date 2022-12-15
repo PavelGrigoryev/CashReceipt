@@ -1,6 +1,6 @@
 package by.grigoryev.cashreceipt.service;
 
-public interface CheckService {
+public interface CheckLogicService {
 
     String createCheck(String idAndQuantity, String discountCardNumber);
 
