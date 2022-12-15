@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/check")
+@RequestMapping("/checks")
 public class CheckController {
 
     private final CheckLogicService checkLogicService;

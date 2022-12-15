@@ -1,13 +1,13 @@
 ###findAll
-GET http://localhost:8080/product
+GET http://localhost:8080/products
 Accept: application/json
 
 ###findById
-GET http://localhost:8080/product/7
+GET http://localhost:8080/products/3
 Accept: application/json
 
 ###save #1
-POST http://localhost:8080/product
+POST http://localhost:8080/products
 Content-Type: application/json
 
 {
@@ -18,7 +18,7 @@ Content-Type: application/json
 }
 
 ###save #2
-POST http://localhost:8080/product
+POST http://localhost:8080/products
 Content-Type: application/json
 
 {
@@ -29,7 +29,7 @@ Content-Type: application/json
 }
 
 ###save #3
-POST http://localhost:8080/product
+POST http://localhost:8080/products
 Content-Type: application/json
 
 {
@@ -40,7 +40,7 @@ Content-Type: application/json
 }
 
 ###save #4
-POST http://localhost:8080/product
+POST http://localhost:8080/products
 Content-Type: application/json
 
 {
@@ -51,7 +51,7 @@ Content-Type: application/json
 }
 
 ###save #5
-POST http://localhost:8080/product
+POST http://localhost:8080/products
 Content-Type: application/json
 
 {
@@ -62,5 +62,5 @@ Content-Type: application/json
 }
 
 ### update
-PUT http://localhost:8080/product/?id=6&quantity=10
+PUT http://localhost:8080/products/?id=6&quantity=10
 Content-Type: application/json

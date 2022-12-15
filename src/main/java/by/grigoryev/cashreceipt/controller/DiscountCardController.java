@@ -3,6 +3,7 @@ package by.grigoryev.cashreceipt.controller;
 import by.grigoryev.cashreceipt.model.DiscountCard;
 import by.grigoryev.cashreceipt.service.DiscountCardService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -10,7 +11,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/discountCard")
+@RequestMapping("/discountCards")
 public class DiscountCardController {
 
     private final DiscountCardService discountCardService;
@@ -27,7 +28,7 @@ public class DiscountCardController {
 
     @PostMapping
     public ResponseEntity<DiscountCard> save(@RequestBody DiscountCard discountCard) {
-        return ResponseEntity.ok(discountCardService.save(discountCard));
+        return ResponseEntity.status(HttpStatus.CREATED).body(discountCardService.save(discountCard));
     }
 
 }

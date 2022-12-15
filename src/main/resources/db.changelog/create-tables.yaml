@@ -16,6 +16,8 @@ databaseChangeLog:
               - column:
                   name: discount_card_number
                   type: varchar(30)
+                  constraints:
+                    unique: true
               - column:
                   name: discount_percentage
                   type: decimal
