@@ -65,7 +65,6 @@ class DiscountCardServiceImplTest {
         assertEquals(mockedDiscountCard, discountCard);
     }
 
-
     @Test
     @DisplayName("testing if DiscountCard equals Mocked DiscountCard")
     void save() {

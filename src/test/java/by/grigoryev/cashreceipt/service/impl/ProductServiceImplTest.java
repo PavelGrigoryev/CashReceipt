@@ -22,6 +22,8 @@ class ProductServiceImplTest {
     public static final String NAME = "Самовар золотой";
     public static final BigDecimal PRICE = BigDecimal.valueOf(256.24);
     public static final boolean PROMOTION = true;
+    public static final int NEW_QUANTITY = 2;
+    public static final long NEW_ID = 2L;
 
     private ProductServiceImpl productService;
     private ProductRepository productRepository;
@@ -68,7 +70,7 @@ class ProductServiceImplTest {
     }
 
     @Test
-    @DisplayName("testing if Product equals Mocked Product")
+    @DisplayName("testing save method")
     void save() {
         Product mockedProduct = getMockedProduct();
         doAnswer(invocationOnMock -> invocationOnMock.getArgument(0))
@@ -76,6 +78,31 @@ class ProductServiceImplTest {
                 .save(any(Product.class));
 
         Product product = productService.save(mockedProduct);
+        assertEquals(mockedProduct, product);
+    }
+
+    @Test
+    @DisplayName("testing update method")
+    void update() {
+        Product mockedProduct = getMockedProduct();
+        doReturn(Optional.of(mockedProduct))
+                .when(productRepository).findById(ID);
+
+        if (!(NEW_QUANTITY == (mockedProduct.getQuantity()))) {
+            mockedProduct.setId(NEW_ID);
+            mockedProduct.setQuantity(NEW_QUANTITY);
+            mockedProduct.setTotal(mockedProduct.getPrice().multiply(BigDecimal.valueOf(NEW_QUANTITY)));
+
+            doAnswer(invocationOnMock -> invocationOnMock.getArgument(0))
+                    .when(productRepository)
+                    .save(any(Product.class));
+
+            Product updatedProduct = productService.save(mockedProduct);
+            assertEquals(mockedProduct, updatedProduct);
+        }
+
+        Product product = productService.update(ID, QUANTITY);
+
         assertEquals(mockedProduct, product);
     }
 
