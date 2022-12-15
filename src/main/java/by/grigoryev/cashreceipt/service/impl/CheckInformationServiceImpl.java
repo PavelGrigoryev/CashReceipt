@@ -15,31 +15,33 @@ public class CheckInformationServiceImpl implements CheckInformationService {
 
     @Override
     public StringBuilder createCheckHeader() {
-        return new StringBuilder().append("\n")
-                .append("Cash Receipt")
-                .append("\n")
-                .append("DATE: ")
-                .append(LocalDate.now())
-                .append(" ")
-                .append("TIME: ")
-                .append(LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")))
-                .append("\n")
-                .append("-".repeat(40))
-                .append("\n")
-                .append(String.format("%-6s %-15s %6s %8s", "QTY", "DESCRIPTION", "PRICE", "TOTAL"))
-                .append("\n");
+        return new StringBuilder("""
+                            
+                Cash Receipt
+                DATE: %s TIME: %s
+                %s
+                %-6s %-15s %6s %8s
+                """.formatted(
+                LocalDate.now(),
+                LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")),
+                "-".repeat(40),
+                "QTY",
+                "DESCRIPTION",
+                "PRICE",
+                "TOTAL"
+        ));
     }
 
     @Override
     public StringBuilder createCheckBody(Product product) {
-        return new StringBuilder().append(String.format(
-                        "%s  | %-12s | %-6s | %s",
-                        product.getQuantity(),
-                        product.getName(),
-                        product.getPrice(),
-                        product.getTotal()
-                ))
-                .append("\n");
+        return new StringBuilder("""
+                %s  | %-12s | %-6s | %s
+                """.formatted(
+                product.getQuantity(),
+                product.getName(),
+                product.getPrice(),
+                product.getTotal()
+        ));
     }
 
     @Override
@@ -48,28 +50,31 @@ public class CheckInformationServiceImpl implements CheckInformationService {
                                             BigDecimal discount,
                                             StringBuilder promoDiscBuilder,
                                             BigDecimal totalSumWithDiscount) {
-        return new StringBuilder().append("=".repeat(40))
-                .append("\n")
-                .append("TOTAL: ")
-                .append(totalSum.stripTrailingZeros())
-                .append("\n")
-                .append("DiscountCard -")
-                .append(discountCardPercentage)
-                .append("% : -")
-                .append(discount.stripTrailingZeros())
-                .append("\n")
-                .append(promoDiscBuilder)
-                .append("TOTAL PAID: ")
-                .append(totalSumWithDiscount.stripTrailingZeros().setScale(2, RoundingMode.UP));
+        return new StringBuilder("""
+                %s
+                TOTAL: %s
+                DiscountCard -%s%s : -%s
+                %sTOTAL PAID: %s
+                """.formatted(
+                "=".repeat(40),
+                totalSum.stripTrailingZeros(),
+                discountCardPercentage, "%",
+                discount.stripTrailingZeros(),
+                promoDiscBuilder,
+                totalSumWithDiscount.setScale(2, RoundingMode.UP).stripTrailingZeros()
+        ));
     }
 
     @Override
     public StringBuilder createCheckPromoDiscount(String productName, BigDecimal promotionDiscount) {
-        return new StringBuilder().append("PromoDiscount -10% : \"")
-                .append(productName)
-                .append("\"\nmore then 5 items: -")
-                .append(promotionDiscount)
-                .append("\n");
+        return new StringBuilder("""
+                PromoDiscount -10%s : "%s"
+                more then 5 items: -%s
+                """.formatted(
+                "%",
+                productName,
+                promotionDiscount
+        ));
     }
 
 }
