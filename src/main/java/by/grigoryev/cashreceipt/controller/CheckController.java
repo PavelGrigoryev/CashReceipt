@@ -13,11 +13,11 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/check")
 public class CheckController {
 
-    private final CheckService cashReceiptService;
+    private final CheckService checkService;
 
     @GetMapping
     public ResponseEntity<String> createCheck(@RequestParam String idAndQuantity, String discountCardNumber) {
-        return ResponseEntity.ok(cashReceiptService.createCheck(idAndQuantity, discountCardNumber));
+        return ResponseEntity.ok(checkService.createCheck(idAndQuantity, discountCardNumber));
     }
 
 }

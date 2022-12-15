@@ -13,7 +13,7 @@ Content-Type: application/json
 {
   "quantity": 1,
   "name": "Волшебный ящик",
-  "price": "1000.25",
+  "price": "100.25",
   "promotion": true
 }
 
@@ -56,7 +56,7 @@ Content-Type: application/json
 
 {
   "quantity": 1,
-  "name": "Отвёртка электро",
+  "name": "Отвёртка железо",
   "price": "40.89",
   "promotion": false
 }

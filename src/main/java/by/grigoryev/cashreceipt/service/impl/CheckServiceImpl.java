@@ -33,7 +33,6 @@ public class CheckServiceImpl implements CheckService {
     public String createCheck(String idAndQuantity, String discountCardNumber) {
         List<Product> products = new ArrayList<>();
         BigDecimal totalSum = new BigDecimal("0");
-
         String[] splitSpace = idAndQuantity.split(" ");
 
         for (String string : splitSpace) {
@@ -44,7 +43,7 @@ public class CheckServiceImpl implements CheckService {
             Product product = productService.update(Long.valueOf(id), Integer.valueOf(quantity));
 
             products.add(product);
-            totalSum = totalSum.add(product.getTotal()).stripTrailingZeros();
+            totalSum = totalSum.add(product.getTotal());
         }
 
         DiscountCard discountCard = discountCardService.findByDiscountCardNumber(discountCardNumber);
@@ -63,21 +62,21 @@ public class CheckServiceImpl implements CheckService {
                 .append("TIME: ")
                 .append(LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")))
                 .append("\n")
-                .append("-".repeat(50))
+                .append("-".repeat(40))
                 .append("\n")
-                .append("QTY  DESCRIPTION     PRICE   TOTAL")
+                .append(String.format("%-6s %-15s %6s %8s", "QTY", "DESCRIPTION", "PRICE", "TOTAL"))
                 .append("\n");
 
         StringBuilder promoDiscBuilder = new StringBuilder();
 
         for (Product product : products) {
-            checkBuilder.append(product.getQuantity())
-                    .append("   ")
-                    .append(product.getName())
-                    .append("   ")
-                    .append(product.getPrice())
-                    .append("   ")
-                    .append(product.getTotal())
+            checkBuilder.append(String.format(
+                            "%s  | %-12s | %-6s | %s",
+                            product.getQuantity(),
+                            product.getName(),
+                            product.getPrice(),
+                            product.getTotal()
+                    ))
                     .append("\n");
 
             if (Boolean.TRUE.equals(product.getPromotion()) && product.getQuantity() > 5) {
@@ -87,25 +86,23 @@ public class CheckServiceImpl implements CheckService {
 
                 totalSumWithDiscount = totalSumWithDiscount.subtract(promotionDiscount);
 
-                promoDiscBuilder.append("PromoDiscount '-10%' for promotional products\n")
-                        .append("with name \"")
+                promoDiscBuilder.append("PromoDiscount -10% : \"")
                         .append(product.getName())
-                        .append("\"")
-                        .append(" more than 5 items: -")
+                        .append("\"\nmore then 5 items: -")
                         .append(promotionDiscount)
                         .append("\n");
             }
 
         }
 
-        checkBuilder.append("=".repeat(50))
+        checkBuilder.append("=".repeat(40))
                 .append("\n")
                 .append("TOTAL: ")
-                .append(totalSum)
+                .append(totalSum.stripTrailingZeros())
                 .append("\n")
-                .append("DiscountCard '-")
+                .append("DiscountCard -")
                 .append(discountCard.getDiscountPercentage())
-                .append("%': -")
+                .append("% : -")
                 .append(discount.stripTrailingZeros())
                 .append("\n")
                 .append(promoDiscBuilder)
