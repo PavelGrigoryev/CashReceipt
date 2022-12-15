@@ -44,7 +44,7 @@ class ProductServiceImplTest {
     }
 
     @Test
-    @DisplayName("testing if exception throws when Product is not found")
+    @DisplayName("testing if exception throws when Product is not found by id")
     void findByIdThrowsException() {
         doThrow(new NoSuchProductException("Product with ID " + ID + " does not exist"))
                 .when(productRepository).findById(ID);
@@ -56,7 +56,7 @@ class ProductServiceImplTest {
     }
 
     @Test
-    @DisplayName("testing if Product returns when it is found")
+    @DisplayName("testing if Product returns when it is found by id")
     void findByIdReturnsProduct() {
         Product mockedProduct = getMockedProduct();
         doReturn(Optional.of(mockedProduct))
@@ -68,16 +68,15 @@ class ProductServiceImplTest {
     }
 
     @Test
-    @DisplayName("testing if Product saves with same id")
-    void saveWithSameId() {
+    @DisplayName("testing if Product equals Mocked Product")
+    void save() {
         Product mockedProduct = getMockedProduct();
         doAnswer(invocationOnMock -> invocationOnMock.getArgument(0))
                 .when(productRepository)
                 .save(any(Product.class));
 
-        Product result = productService.save(mockedProduct);
-        assertEquals(mockedProduct, result);
-        assertEquals(ID, result.getId());
+        Product product = productService.save(mockedProduct);
+        assertEquals(mockedProduct, product);
     }
 
     private Product getMockedProduct() {

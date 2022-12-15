@@ -2,7 +2,6 @@ package by.grigoryev.cashreceipt.service.impl;
 
 import by.grigoryev.cashreceipt.model.Product;
 import by.grigoryev.cashreceipt.service.CheckInformationService;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -11,7 +10,6 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 
-@Slf4j
 @Service
 public class CheckInformationServiceImpl implements CheckInformationService {
 
