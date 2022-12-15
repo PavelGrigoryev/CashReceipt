@@ -1,7 +1,7 @@
 package by.grigoryev.cashreceipt.controller;
 
-import by.grigoryev.cashreceipt.model.Product;
-import by.grigoryev.cashreceipt.service.impl.ProductServiceImpl;
+import by.grigoryev.cashreceipt.model.DiscountCard;
+import by.grigoryev.cashreceipt.service.impl.DiscountCardServiceImpl;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -15,44 +15,40 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(SpringExtension.class)
-@WebMvcTest(ProductController.class)
-class ProductControllerTest {
+@WebMvcTest(DiscountCardController.class)
+class DiscountCardControllerTest {
 
     public static final long ID = 1L;
-    public static final int QUANTITY = 3;
-    public static final String NAME = "Самовар золотой";
-    public static final BigDecimal PRICE = BigDecimal.valueOf(256.24);
-    public static final boolean PROMOTION = true;
+    public static final String DISCOUNT_CARD_NUMBER = "1234";
+    public static final BigDecimal DISCOUNT_PERCENTAGE = BigDecimal.valueOf(3);
     public static final String JSON_CONTENT = """
             {
                 "id": %s,
-                "quantity": %s,
-                "name": "%s",
-                "price": %s,
-                "total": %s,
-                "promotion": %s
+                "discountCardNumber": "%s",
+                "discountPercentage": %s
               }
-            """.formatted(ID, QUANTITY, NAME, PRICE, PRICE.multiply(BigDecimal.valueOf(QUANTITY)), PROMOTION);
+            """.formatted(ID, DISCOUNT_CARD_NUMBER, DISCOUNT_PERCENTAGE);
 
     @Autowired
     MockMvc mockMvc;
     @MockBean
-    private ProductServiceImpl productService;
+    private DiscountCardServiceImpl discountCardService;
 
     @Test
     @DisplayName("testing display name with empty list of elements")
     void findAllWithEmptyList() throws Exception {
-        doReturn(new ArrayList<>()).when(productService).findAll();
+        doReturn(new ArrayList<>()).when(discountCardService).findAll();
 
-        mockMvc.perform(get("/products"))
+        mockMvc.perform(get("/discountCards"))
                 .andExpect(status().isOk())
                 .andExpect(content().json("[]"));
     }
@@ -60,9 +56,9 @@ class ProductControllerTest {
     @Test
     @DisplayName("testing display name with filled list of elements")
     void findAllWithFilledValues() throws Exception {
-        doReturn(List.of(getMockedProduct())).when(productService).findAll();
+        doReturn(List.of(getMockedDiscountCard())).when(discountCardService).findAll();
 
-        mockMvc.perform(get("/products"))
+        mockMvc.perform(get("/discountCards"))
                 .andExpect(status().isOk())
                 .andExpect(content().json("[" + JSON_CONTENT + "]"));
     }
@@ -70,10 +66,10 @@ class ProductControllerTest {
     @Test
     @DisplayName("testing findById with exist element")
     void findByIdWithExistElement() throws Exception {
-        doReturn(getMockedProduct()).when(productService)
+        doReturn(getMockedDiscountCard()).when(discountCardService)
                 .findById(ID);
 
-        mockMvc.perform(get("/products/" + ID))
+        mockMvc.perform(get("/discountCards/" + ID))
                 .andExpect(status().isOk())
                 .andExpect(content().json(JSON_CONTENT));
     }
@@ -81,10 +77,10 @@ class ProductControllerTest {
     @Test
     @DisplayName("testing save endpoint")
     void save() throws Exception {
-        doReturn(getMockedProduct()).when(productService)
-                .save(any(Product.class));
+        doReturn(getMockedDiscountCard()).when(discountCardService)
+                .save(any(DiscountCard.class));
 
-        mockMvc.perform(post("/products")
+        mockMvc.perform(post("/discountCards")
                         .content(JSON_CONTENT)
                         .contentType(APPLICATION_JSON))
                 .andExpect(status().isCreated())
@@ -92,37 +88,21 @@ class ProductControllerTest {
     }
 
     @Test
-    @DisplayName("testing update endpoint")
-    void update() throws Exception {
-        doReturn(getMockedProduct()).when(productService)
-                .update(anyLong(), anyInt());
-
-        mockMvc.perform(put("/products/?id=" + ID + "&quantity=" + QUANTITY)
-                        .content(JSON_CONTENT)
-                        .contentType(APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(content().json(JSON_CONTENT));
-    }
-
-    @Test
     @DisplayName("testing save endpoint with bad request")
     void saveWithBadRequest() throws Exception {
-        doReturn(getMockedProduct()).when(productService)
-                .save(any(Product.class));
+        doReturn(getMockedDiscountCard()).when(discountCardService)
+                .save(any(DiscountCard.class));
 
-        mockMvc.perform(post("/products")
+        mockMvc.perform(post("/discountCards")
                         .contentType(APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
     }
 
-    private Product getMockedProduct() {
-        return Product.builder()
+    private DiscountCard getMockedDiscountCard() {
+        return DiscountCard.builder()
                 .id(ID)
-                .quantity(QUANTITY)
-                .name(NAME)
-                .price(PRICE)
-                .total(PRICE.multiply(BigDecimal.valueOf(QUANTITY)))
-                .promotion(PROMOTION)
+                .discountCardNumber(DISCOUNT_CARD_NUMBER)
+                .discountPercentage(DISCOUNT_PERCENTAGE)
                 .build();
     }
 
