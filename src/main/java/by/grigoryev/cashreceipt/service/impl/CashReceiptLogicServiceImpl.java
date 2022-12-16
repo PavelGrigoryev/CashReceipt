@@ -39,8 +39,8 @@ public class CashReceiptLogicServiceImpl implements CashReceiptLogicService {
 
         totalSumWithDiscount = getTotalSumWithDiscount(products, totalSumWithDiscount, checkBuilder, promoDiscBuilder);
 
-        checkBuilder.append(cashReceiptInformationService.createCashReceiptResults(totalSum, discountCard.getDiscountPercentage(),
-                discount, promoDiscBuilder, totalSumWithDiscount));
+        checkBuilder.append(cashReceiptInformationService.createCashReceiptResults(totalSum,
+                discountCard.getDiscountPercentage(), discount, promoDiscBuilder, totalSumWithDiscount));
 
         uploadFileService.uploadFile(checkBuilder.toString());
 
@@ -71,9 +71,9 @@ public class CashReceiptLogicServiceImpl implements CashReceiptLogicService {
     }
 
     protected BigDecimal getTotalSumWithDiscount(List<Product> products,
-                                               BigDecimal totalSumWithDiscount,
-                                               StringBuilder checkBuilder,
-                                               StringBuilder promoDiscBuilder) {
+                                                 BigDecimal totalSumWithDiscount,
+                                                 StringBuilder checkBuilder,
+                                                 StringBuilder promoDiscBuilder) {
         for (Product product : products) {
             checkBuilder.append(cashReceiptInformationService.createCashReceiptBody(product));
 

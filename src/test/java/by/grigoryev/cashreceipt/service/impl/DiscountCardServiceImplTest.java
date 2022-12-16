@@ -67,7 +67,7 @@ class DiscountCardServiceImplTest {
     }
 
     @Test
-    @DisplayName("testing if DiscountCard equals Mocked DiscountCard")
+    @DisplayName("testing save method")
     void save() {
         DiscountCard mockedDiscountCard = getMockedDiscountCard();
         doAnswer(invocationOnMock -> invocationOnMock.getArgument(0))

@@ -15,7 +15,7 @@ import java.time.format.DateTimeFormatter;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.spy;
 
-class CheckInformationServiceImplTest {
+class CashReceiptInformationServiceImplTest {
 
     private CashReceiptInformationService cashReceiptInformationService;
 
@@ -25,7 +25,7 @@ class CheckInformationServiceImplTest {
     }
 
     @Test
-    @DisplayName("test createCashReceiptHeader method")
+    @DisplayName("testing createCashReceiptHeader method")
     void createCashReceiptHeader() {
         String expectedValue = """
                             
@@ -49,7 +49,7 @@ class CheckInformationServiceImplTest {
     }
 
     @Test
-    @DisplayName("test createCashReceiptBody method")
+    @DisplayName("testing createCashReceiptBody method")
     void createCashReceiptBody() {
         Product mockedProduct = getMockedProduct();
 
@@ -68,7 +68,7 @@ class CheckInformationServiceImplTest {
     }
 
     @Test
-    @DisplayName("test createCashReceiptResults method")
+    @DisplayName("testing createCashReceiptResults method")
     void createCashReceiptResults() {
         BigDecimal totalSum = new BigDecimal("165");
         BigDecimal discountCardPercentage = new BigDecimal("3");
@@ -97,7 +97,7 @@ class CheckInformationServiceImplTest {
     }
 
     @Test
-    @DisplayName("test createCashReceiptPromoDiscount method")
+    @DisplayName("testing createCashReceiptPromoDiscount method")
     void createCashReceiptPromoDiscount() {
         String productName = getMockedProduct().getName();
         BigDecimal promotionDiscount = getMockedProduct().getPrice();

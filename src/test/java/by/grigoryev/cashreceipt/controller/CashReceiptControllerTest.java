@@ -45,8 +45,8 @@ class CashReceiptControllerTest {
     private CashReceiptLogicService cashReceiptLogicService;
 
     @Test
-    @DisplayName("testing createCheck endpoint")
-    void createCheckWithExistElement() throws Exception {
+    @DisplayName("testing createCashReceipt endpoint")
+    void createCashReceipt() throws Exception {
         doReturn(STRING_CONTENT).when(cashReceiptLogicService)
                 .createCashReceipt(ID_AND_QUANTITY, DISCOUNT_CARD_NUMBER);
 

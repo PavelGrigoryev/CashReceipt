@@ -18,7 +18,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
-class CheckLogicServiceImplTest {
+class CashReceiptLogicServiceImplTest {
 
     private ProductService productService;
     private CashReceiptInformationService cashReceiptInformationService;
@@ -35,7 +35,7 @@ class CheckLogicServiceImplTest {
     }
 
     @Test
-    @DisplayName("test getTotalSum method")
+    @DisplayName("testing getTotalSum method")
     void getTotalSum() {
         String idAndQuantity = "3-6 2-6 1-7";
         List<Product> products = new ArrayList<>();
@@ -66,7 +66,7 @@ class CheckLogicServiceImplTest {
     }
 
     @Test
-    @DisplayName("test getDiscount method")
+    @DisplayName("testing getDiscount method")
     void getDiscount() {
         DiscountCard discountCard = getMockedDiscountCard();
         BigDecimal totalSum = new BigDecimal("255");
@@ -102,16 +102,16 @@ class CheckLogicServiceImplTest {
 
             if (Boolean.TRUE.equals(product.getPromotion()) && product.getQuantity() > 5) {
 
-                BigDecimal expectedDiscount = product.getTotal()
+                BigDecimal promotionDiscount = product.getTotal()
                         .divide(BigDecimal.valueOf(100), 4, RoundingMode.UP)
                         .multiply(BigDecimal.valueOf(10)).stripTrailingZeros();
-                expectedValue = expectedValue.subtract(expectedDiscount);
+                expectedValue = expectedValue.subtract(promotionDiscount);
 
                 doReturn(new StringBuilder()).when(cashReceiptInformationService)
-                        .createCashReceiptPromoDiscount(product.getName(), expectedDiscount);
+                        .createCashReceiptPromoDiscount(product.getName(), promotionDiscount);
 
                 new StringBuilder
-                        (cashReceiptInformationService.createCashReceiptPromoDiscount(product.getName(), expectedDiscount));
+                        (cashReceiptInformationService.createCashReceiptPromoDiscount(product.getName(), promotionDiscount));
             }
 
         }

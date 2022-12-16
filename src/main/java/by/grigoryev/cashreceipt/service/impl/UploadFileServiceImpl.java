@@ -12,13 +12,13 @@ import java.io.IOException;
 @Service
 public class UploadFileServiceImpl implements UploadFileService {
     @Override
-    public void uploadFile(String check) {
+    public void uploadFile(String cashReceipt) {
         File currDir = new File(".");
         String path = currDir.getAbsolutePath();
-        String fileLocation = path.substring(0, path.length() - 1) + "Check.txt";
+        String fileLocation = path.substring(0, path.length() - 1) + "CashReceipt.txt";
 
         try (FileOutputStream outputStream = new FileOutputStream(fileLocation)) {
-            outputStream.write(check.getBytes());
+            outputStream.write(cashReceipt.getBytes());
             log.info("uploadFile {}", fileLocation);
         } catch (IOException e) {
             log.error(e.getMessage());

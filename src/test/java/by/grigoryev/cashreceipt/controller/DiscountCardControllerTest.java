@@ -44,7 +44,7 @@ class DiscountCardControllerTest {
     private DiscountCardService discountCardService;
 
     @Test
-    @DisplayName("testing display name with empty list of elements")
+    @DisplayName("testing findAll endpoint with empty list of elements")
     void findAllWithEmptyList() throws Exception {
         doReturn(new ArrayList<>()).when(discountCardService).findAll();
 
@@ -54,7 +54,7 @@ class DiscountCardControllerTest {
     }
 
     @Test
-    @DisplayName("testing display name with filled list of elements")
+    @DisplayName("testing findAll endpoint with filled list of elements")
     void findAllWithFilledValues() throws Exception {
         doReturn(List.of(getMockedDiscountCard())).when(discountCardService).findAll();
 
@@ -64,7 +64,7 @@ class DiscountCardControllerTest {
     }
 
     @Test
-    @DisplayName("testing findById with exist element")
+    @DisplayName("testing findById endpoint with exist element")
     void findByIdWithExistElement() throws Exception {
         doReturn(getMockedDiscountCard()).when(discountCardService)
                 .findById(ID);
