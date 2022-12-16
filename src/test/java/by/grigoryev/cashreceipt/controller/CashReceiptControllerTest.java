@@ -1,6 +1,6 @@
 package by.grigoryev.cashreceipt.controller;
 
-import by.grigoryev.cashreceipt.service.CheckLogicService;
+import by.grigoryev.cashreceipt.service.CashReceiptLogicService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -16,8 +16,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(SpringExtension.class)
-@WebMvcTest(CheckController.class)
-class CheckControllerTest {
+@WebMvcTest(CashReceiptController.class)
+class CashReceiptControllerTest {
 
     public static final String ID_AND_QUANTITY = "3-6 2-6 1-7";
     public static final String DISCOUNT_CARD_NUMBER = "1234";
@@ -42,15 +42,15 @@ class CheckControllerTest {
     @Autowired
     MockMvc mockMvc;
     @MockBean
-    private CheckLogicService checkLogicService;
+    private CashReceiptLogicService cashReceiptLogicService;
 
     @Test
     @DisplayName("testing createCheck endpoint")
     void createCheckWithExistElement() throws Exception {
-        doReturn(STRING_CONTENT).when(checkLogicService)
-                .createCheck(ID_AND_QUANTITY, DISCOUNT_CARD_NUMBER);
+        doReturn(STRING_CONTENT).when(cashReceiptLogicService)
+                .createCashReceipt(ID_AND_QUANTITY, DISCOUNT_CARD_NUMBER);
 
-        mockMvc.perform(get("/checks/?idAndQuantity=" + ID_AND_QUANTITY
+        mockMvc.perform(get("/cashReceipts/?idAndQuantity=" + ID_AND_QUANTITY
                             + "&discountCardNumber=" + DISCOUNT_CARD_NUMBER))
                 .andExpect(status().isOk())
                 .andExpect(content().string(STRING_CONTENT));

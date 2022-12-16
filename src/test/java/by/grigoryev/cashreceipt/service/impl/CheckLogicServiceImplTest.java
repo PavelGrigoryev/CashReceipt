@@ -2,7 +2,7 @@ package by.grigoryev.cashreceipt.service.impl;
 
 import by.grigoryev.cashreceipt.model.DiscountCard;
 import by.grigoryev.cashreceipt.model.Product;
-import by.grigoryev.cashreceipt.service.CheckInformationService;
+import by.grigoryev.cashreceipt.service.CashReceiptInformationService;
 import by.grigoryev.cashreceipt.service.DiscountCardService;
 import by.grigoryev.cashreceipt.service.ProductService;
 import by.grigoryev.cashreceipt.service.UploadFileService;
@@ -21,17 +21,17 @@ import static org.mockito.Mockito.*;
 class CheckLogicServiceImplTest {
 
     private ProductService productService;
-    private CheckInformationService checkInformationService;
-    private CheckLogicServiceImpl checkLogicService;
+    private CashReceiptInformationService cashReceiptInformationService;
+    private CashReceiptLogicServiceImpl cashReceiptLogicService;
 
     @BeforeEach
     void setUp() {
         productService = mock(ProductService.class);
         DiscountCardService discountCardService = mock(DiscountCardService.class);
-        checkInformationService = mock(CheckInformationService.class);
+        cashReceiptInformationService = mock(CashReceiptInformationService.class);
         UploadFileService uploadFileService = mock(UploadFileService.class);
-        checkLogicService = spy(new CheckLogicServiceImpl(productService, discountCardService,
-                checkInformationService, uploadFileService));
+        cashReceiptLogicService = spy(new CashReceiptLogicServiceImpl(productService, discountCardService,
+                cashReceiptInformationService, uploadFileService));
     }
 
     @Test
@@ -60,7 +60,7 @@ class CheckLogicServiceImplTest {
             assertEquals(product.getQuantity(), Integer.valueOf(quantity));
         }
 
-        BigDecimal totalSum = checkLogicService.getTotalSum(idAndQuantity, products);
+        BigDecimal totalSum = cashReceiptLogicService.getTotalSum(idAndQuantity, products);
 
         assertEquals(expectedValue, totalSum);
     }
@@ -74,7 +74,7 @@ class CheckLogicServiceImplTest {
         BigDecimal expectedValue = totalSum.divide(BigDecimal.valueOf(100), 4, RoundingMode.UP)
                 .multiply(discountCard.getDiscountPercentage());
 
-        BigDecimal discount = checkLogicService.getDiscount(totalSum, discountCard);
+        BigDecimal discount = cashReceiptLogicService.getDiscount(totalSum, discountCard);
 
         assertEquals(expectedValue, discount);
     }
@@ -86,7 +86,7 @@ class CheckLogicServiceImplTest {
 
         List<Product> products = List.of(getMockedProduct(1L, 6));
 
-        BigDecimal totalSumWithDiscount = checkLogicService.getTotalSumWithDiscount(
+        BigDecimal totalSumWithDiscount = cashReceiptLogicService.getTotalSumWithDiscount(
                 List.of(getMockedProduct(1L, 6)),
                 expectedValue,
                 new StringBuilder(),
@@ -95,10 +95,10 @@ class CheckLogicServiceImplTest {
 
         for (Product product : products) {
 
-            doReturn(new StringBuilder()).when(checkInformationService)
-                    .createCheckBody(product);
+            doReturn(new StringBuilder()).when(cashReceiptInformationService)
+                    .createCashReceiptBody(product);
 
-            new StringBuilder(checkInformationService.createCheckBody(product));
+            new StringBuilder(cashReceiptInformationService.createCashReceiptBody(product));
 
             if (Boolean.TRUE.equals(product.getPromotion()) && product.getQuantity() > 5) {
 
@@ -107,11 +107,11 @@ class CheckLogicServiceImplTest {
                         .multiply(BigDecimal.valueOf(10)).stripTrailingZeros();
                 expectedValue = expectedValue.subtract(expectedDiscount);
 
-                doReturn(new StringBuilder()).when(checkInformationService)
-                        .createCheckPromoDiscount(product.getName(), expectedDiscount);
+                doReturn(new StringBuilder()).when(cashReceiptInformationService)
+                        .createCashReceiptPromoDiscount(product.getName(), expectedDiscount);
 
                 new StringBuilder
-                        (checkInformationService.createCheckPromoDiscount(product.getName(), expectedDiscount));
+                        (cashReceiptInformationService.createCashReceiptPromoDiscount(product.getName(), expectedDiscount));
             }
 
         }

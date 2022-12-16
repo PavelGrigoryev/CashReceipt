@@ -15,18 +15,18 @@ import java.util.List;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class CheckLogicServiceImpl implements CheckLogicService {
+public class CashReceiptLogicServiceImpl implements CashReceiptLogicService {
 
     private final ProductService productService;
 
     private final DiscountCardService discountCardService;
 
-    private final CheckInformationService checkInformationService;
+    private final CashReceiptInformationService cashReceiptInformationService;
 
     private final UploadFileService uploadFileService;
 
     @Override
-    public String createCheck(String idAndQuantity, String discountCardNumber) {
+    public String createCashReceipt(String idAndQuantity, String discountCardNumber) {
         List<Product> products = new ArrayList<>();
         BigDecimal totalSum = getTotalSum(idAndQuantity, products);
 
@@ -34,12 +34,12 @@ public class CheckLogicServiceImpl implements CheckLogicService {
         BigDecimal discount = getDiscount(totalSum, discountCard);
         BigDecimal totalSumWithDiscount = totalSum.subtract(discount);
 
-        StringBuilder checkBuilder = checkInformationService.createCheckHeader();
+        StringBuilder checkBuilder = cashReceiptInformationService.createCashReceiptHeader();
         StringBuilder promoDiscBuilder = new StringBuilder();
 
         totalSumWithDiscount = getTotalSumWithDiscount(products, totalSumWithDiscount, checkBuilder, promoDiscBuilder);
 
-        checkBuilder.append(checkInformationService.createCheckResults(totalSum, discountCard.getDiscountPercentage(),
+        checkBuilder.append(cashReceiptInformationService.createCashReceiptResults(totalSum, discountCard.getDiscountPercentage(),
                 discount, promoDiscBuilder, totalSumWithDiscount));
 
         uploadFileService.uploadFile(checkBuilder.toString());
@@ -75,7 +75,7 @@ public class CheckLogicServiceImpl implements CheckLogicService {
                                                StringBuilder checkBuilder,
                                                StringBuilder promoDiscBuilder) {
         for (Product product : products) {
-            checkBuilder.append(checkInformationService.createCheckBody(product));
+            checkBuilder.append(cashReceiptInformationService.createCashReceiptBody(product));
 
             if (Boolean.TRUE.equals(product.getPromotion()) && product.getQuantity() > 5) {
                 BigDecimal promotionDiscount = product.getTotal()
@@ -83,7 +83,7 @@ public class CheckLogicServiceImpl implements CheckLogicService {
                         .multiply(BigDecimal.valueOf(10)).stripTrailingZeros();
                 totalSumWithDiscount = totalSumWithDiscount.subtract(promotionDiscount);
                 promoDiscBuilder
-                        .append(checkInformationService.createCheckPromoDiscount(product.getName(), promotionDiscount));
+                        .append(cashReceiptInformationService.createCashReceiptPromoDiscount(product.getName(), promotionDiscount));
             }
 
         }

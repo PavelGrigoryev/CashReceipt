@@ -1,7 +1,7 @@
 package by.grigoryev.cashreceipt.service.impl;
 
 import by.grigoryev.cashreceipt.model.Product;
-import by.grigoryev.cashreceipt.service.CheckInformationService;
+import by.grigoryev.cashreceipt.service.CashReceiptInformationService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -17,16 +17,16 @@ import static org.mockito.Mockito.spy;
 
 class CheckInformationServiceImplTest {
 
-    private CheckInformationService checkInformationService;
+    private CashReceiptInformationService cashReceiptInformationService;
 
     @BeforeEach
     void setUp() {
-        checkInformationService = spy(new CheckInformationServiceImpl());
+        cashReceiptInformationService = spy(new CashReceiptInformationServiceImpl());
     }
 
     @Test
-    @DisplayName("test createCheckHeader method")
-    void createCheckHeader() {
+    @DisplayName("test createCashReceiptHeader method")
+    void createCashReceiptHeader() {
         String expectedValue = """
                             
                 Cash Receipt
@@ -43,14 +43,14 @@ class CheckInformationServiceImplTest {
                 "TOTAL"
         );
 
-        StringBuilder checkHeader = checkInformationService.createCheckHeader();
+        StringBuilder checkHeader = cashReceiptInformationService.createCashReceiptHeader();
 
         assertEquals(expectedValue, checkHeader.toString());
     }
 
     @Test
-    @DisplayName("test createCheckBody method")
-    void createCheckBody() {
+    @DisplayName("test createCashReceiptBody method")
+    void createCashReceiptBody() {
         Product mockedProduct = getMockedProduct();
 
         String expectedValue = """
@@ -62,14 +62,14 @@ class CheckInformationServiceImplTest {
                 mockedProduct.getTotal()
         );
 
-        StringBuilder checkBody = checkInformationService.createCheckBody(mockedProduct);
+        StringBuilder checkBody = cashReceiptInformationService.createCashReceiptBody(mockedProduct);
 
         assertEquals(expectedValue, checkBody.toString());
     }
 
     @Test
-    @DisplayName("test createCheckResults method")
-    void createCheckResults() {
+    @DisplayName("test createCashReceiptResults method")
+    void createCashReceiptResults() {
         BigDecimal totalSum = new BigDecimal("165");
         BigDecimal discountCardPercentage = new BigDecimal("3");
         BigDecimal discount = new BigDecimal("10");
@@ -90,15 +90,15 @@ class CheckInformationServiceImplTest {
                 totalSumWithDiscount.setScale(2, RoundingMode.UP).stripTrailingZeros()
         );
 
-        StringBuilder checkResults = checkInformationService
-                .createCheckResults(totalSum, discountCardPercentage, discount, promoDiscBuilder, totalSumWithDiscount);
+        StringBuilder checkResults = cashReceiptInformationService
+                .createCashReceiptResults(totalSum, discountCardPercentage, discount, promoDiscBuilder, totalSumWithDiscount);
 
         assertEquals(expectedValue, checkResults.toString());
     }
 
     @Test
-    @DisplayName("test createCheckPromoDiscount method")
-    void createCheckPromoDiscount() {
+    @DisplayName("test createCashReceiptPromoDiscount method")
+    void createCashReceiptPromoDiscount() {
         String productName = getMockedProduct().getName();
         BigDecimal promotionDiscount = getMockedProduct().getPrice();
 
@@ -111,8 +111,8 @@ class CheckInformationServiceImplTest {
                 promotionDiscount
         );
 
-        StringBuilder checkPromoDiscount = checkInformationService
-                .createCheckPromoDiscount(productName, promotionDiscount);
+        StringBuilder checkPromoDiscount = cashReceiptInformationService
+                .createCashReceiptPromoDiscount(productName, promotionDiscount);
 
         assertEquals(expectedValue, checkPromoDiscount.toString());
     }

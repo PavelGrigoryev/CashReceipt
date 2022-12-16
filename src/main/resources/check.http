@@ -1,3 +1,0 @@
-###createCheck
-GET http://localhost:8080/checks?idAndQuantity=3-6 2-6 1-7&discountCardNumber=9875
-Accept: application/json

@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 
 @Slf4j
 @ControllerAdvice
-public class ApplicationExceptionHandler {
+public class CashReceiptExceptionHandler {
 
     private final IncorrectData data = new IncorrectData();
 

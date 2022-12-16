@@ -1,7 +1,7 @@
 package by.grigoryev.cashreceipt.service.impl;
 
 import by.grigoryev.cashreceipt.model.Product;
-import by.grigoryev.cashreceipt.service.CheckInformationService;
+import by.grigoryev.cashreceipt.service.CashReceiptInformationService;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -11,10 +11,10 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 
 @Service
-public class CheckInformationServiceImpl implements CheckInformationService {
+public class CashReceiptInformationServiceImpl implements CashReceiptInformationService {
 
     @Override
-    public StringBuilder createCheckHeader() {
+    public StringBuilder createCashReceiptHeader() {
         return new StringBuilder("""
                             
                 Cash Receipt
@@ -33,7 +33,7 @@ public class CheckInformationServiceImpl implements CheckInformationService {
     }
 
     @Override
-    public StringBuilder createCheckBody(Product product) {
+    public StringBuilder createCashReceiptBody(Product product) {
         return new StringBuilder("""
                 %s  | %-12s | %-6s | %s
                 """.formatted(
@@ -45,11 +45,11 @@ public class CheckInformationServiceImpl implements CheckInformationService {
     }
 
     @Override
-    public StringBuilder createCheckResults(BigDecimal totalSum,
-                                            BigDecimal discountCardPercentage,
-                                            BigDecimal discount,
-                                            StringBuilder promoDiscBuilder,
-                                            BigDecimal totalSumWithDiscount) {
+    public StringBuilder createCashReceiptResults(BigDecimal totalSum,
+                                                  BigDecimal discountCardPercentage,
+                                                  BigDecimal discount,
+                                                  StringBuilder promoDiscBuilder,
+                                                  BigDecimal totalSumWithDiscount) {
         return new StringBuilder("""
                 %s
                 TOTAL: %s
@@ -66,7 +66,7 @@ public class CheckInformationServiceImpl implements CheckInformationService {
     }
 
     @Override
-    public StringBuilder createCheckPromoDiscount(String productName, BigDecimal promotionDiscount) {
+    public StringBuilder createCashReceiptPromoDiscount(String productName, BigDecimal promotionDiscount) {
         return new StringBuilder("""
                 PromoDiscount -10%s : "%s"
                 more then 5 items: -%s
