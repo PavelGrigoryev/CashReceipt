@@ -48,7 +48,7 @@ public class CheckLogicServiceImpl implements CheckLogicService {
         return checkBuilder.toString();
     }
 
-    private BigDecimal getTotalSum(String idAndQuantity, List<Product> products) {
+    protected BigDecimal getTotalSum(String idAndQuantity, List<Product> products) {
         String[] splitSpace = idAndQuantity.split(" ");
         BigDecimal totalSum = new BigDecimal("0");
 
@@ -65,12 +65,12 @@ public class CheckLogicServiceImpl implements CheckLogicService {
         return totalSum;
     }
 
-    private BigDecimal getDiscount(BigDecimal totalSum, DiscountCard discountCard) {
+    protected BigDecimal getDiscount(BigDecimal totalSum, DiscountCard discountCard) {
         return totalSum.divide(BigDecimal.valueOf(100), 4, RoundingMode.UP)
                 .multiply(discountCard.getDiscountPercentage());
     }
 
-    private BigDecimal getTotalSumWithDiscount(List<Product> products,
+    protected BigDecimal getTotalSumWithDiscount(List<Product> products,
                                                BigDecimal totalSumWithDiscount,
                                                StringBuilder checkBuilder,
                                                StringBuilder promoDiscBuilder) {

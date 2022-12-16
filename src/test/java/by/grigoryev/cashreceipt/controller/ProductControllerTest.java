@@ -1,7 +1,7 @@
 package by.grigoryev.cashreceipt.controller;
 
 import by.grigoryev.cashreceipt.model.Product;
-import by.grigoryev.cashreceipt.service.impl.ProductServiceImpl;
+import by.grigoryev.cashreceipt.service.ProductService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -45,7 +45,7 @@ class ProductControllerTest {
     @Autowired
     MockMvc mockMvc;
     @MockBean
-    private ProductServiceImpl productService;
+    private ProductService productService;
 
     @Test
     @DisplayName("testing display name with empty list of elements")

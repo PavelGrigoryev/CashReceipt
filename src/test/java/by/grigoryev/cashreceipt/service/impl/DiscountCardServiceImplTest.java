@@ -3,6 +3,7 @@ package by.grigoryev.cashreceipt.service.impl;
 import by.grigoryev.cashreceipt.exception.NoSuchDiscountCardException;
 import by.grigoryev.cashreceipt.model.DiscountCard;
 import by.grigoryev.cashreceipt.repository.DiscountCardRepository;
+import by.grigoryev.cashreceipt.service.DiscountCardService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -21,7 +22,7 @@ class DiscountCardServiceImplTest {
     public static final String DISCOUNT_CARD_NUMBER = "1234";
     public static final BigDecimal DISCOUNT_PERCENTAGE = BigDecimal.valueOf(3);
 
-    private DiscountCardServiceImpl discountCardService;
+    private DiscountCardService discountCardService;
     private DiscountCardRepository discountCardRepository;
 
     @BeforeEach

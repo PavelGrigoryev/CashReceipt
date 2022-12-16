@@ -3,6 +3,7 @@ package by.grigoryev.cashreceipt.service.impl;
 import by.grigoryev.cashreceipt.exception.NoSuchProductException;
 import by.grigoryev.cashreceipt.model.Product;
 import by.grigoryev.cashreceipt.repository.ProductRepository;
+import by.grigoryev.cashreceipt.service.ProductService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -25,7 +26,7 @@ class ProductServiceImplTest {
     public static final int NEW_QUANTITY = 2;
     public static final long NEW_ID = 2L;
 
-    private ProductServiceImpl productService;
+    private ProductService productService;
     private ProductRepository productRepository;
 
     @BeforeEach

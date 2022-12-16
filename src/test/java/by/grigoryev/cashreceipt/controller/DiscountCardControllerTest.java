@@ -1,7 +1,7 @@
 package by.grigoryev.cashreceipt.controller;
 
 import by.grigoryev.cashreceipt.model.DiscountCard;
-import by.grigoryev.cashreceipt.service.impl.DiscountCardServiceImpl;
+import by.grigoryev.cashreceipt.service.DiscountCardService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -41,7 +41,7 @@ class DiscountCardControllerTest {
     @Autowired
     MockMvc mockMvc;
     @MockBean
-    private DiscountCardServiceImpl discountCardService;
+    private DiscountCardService discountCardService;
 
     @Test
     @DisplayName("testing display name with empty list of elements")
