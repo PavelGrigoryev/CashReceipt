@@ -21,23 +21,17 @@ import static org.mockito.Mockito.*;
 class CheckLogicServiceImplTest {
 
     private ProductService productService;
-    private DiscountCardService discountCardService;
     private CheckInformationService checkInformationService;
-    private UploadFileService uploadFileService;
     private CheckLogicServiceImpl checkLogicService;
 
     @BeforeEach
     void setUp() {
         productService = mock(ProductService.class);
-        discountCardService = mock(DiscountCardService.class);
+        DiscountCardService discountCardService = mock(DiscountCardService.class);
         checkInformationService = mock(CheckInformationService.class);
-        uploadFileService = mock(UploadFileService.class);
+        UploadFileService uploadFileService = mock(UploadFileService.class);
         checkLogicService = spy(new CheckLogicServiceImpl(productService, discountCardService,
                 checkInformationService, uploadFileService));
-    }
-
-    @Test
-    void createCheck() {
     }
 
     @Test
