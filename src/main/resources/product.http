@@ -12,8 +12,8 @@ Content-Type: application/json
 
 {
   "quantity": 1,
-  "name": "Волшебный ящик",
-  "price": "100.25",
+  "name": "Rock-drill Bosh",
+  "price": "575.25",
   "promotion": true
 }
 
@@ -22,10 +22,10 @@ POST http://localhost:8080/products
 Content-Type: application/json
 
 {
-  "quantity": 3,
-  "name": "Самовар золотой",
-  "price": "256.2",
-  "promotion": true
+  "quantity": 1,
+  "name": "Golden samovar",
+  "price": "100.99",
+  "promotion": false
 }
 
 ###save #3
@@ -33,9 +33,9 @@ POST http://localhost:8080/products
 Content-Type: application/json
 
 {
-  "quantity": 2,
-  "name": "Перчатка шерсть",
-  "price": "25.69",
+  "quantity": 1,
+  "name": "Woolen gloves",
+  "price": "30.89",
   "promotion": true
 }
 
@@ -44,10 +44,10 @@ POST http://localhost:8080/products
 Content-Type: application/json
 
 {
-  "quantity": 4,
-  "name": "Лапша съедобная",
-  "price": "78.11",
-  "promotion": false
+  "quantity": 1,
+  "name": "Edible noodles",
+  "price": "7.41",
+  "promotion": true
 }
 
 ###save #5
@@ -56,9 +56,9 @@ Content-Type: application/json
 
 {
   "quantity": 1,
-  "name": "Отвёртка железо",
-  "price": "40.89",
-  "promotion": false
+  "name": "Revision hatch",
+  "price": "50.73",
+  "promotion": true
 }
 
 ### update

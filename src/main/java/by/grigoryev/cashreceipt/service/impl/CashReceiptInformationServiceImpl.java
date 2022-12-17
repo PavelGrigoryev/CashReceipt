@@ -35,7 +35,7 @@ public class CashReceiptInformationServiceImpl implements CashReceiptInformation
     @Override
     public StringBuilder createCashReceiptBody(Product product) {
         return new StringBuilder("""
-                %s  | %-12s | %-6s | %s
+                %s  | %-15s | %-6s | %s
                 """.formatted(
                 product.getQuantity(),
                 product.getName(),
@@ -69,7 +69,7 @@ public class CashReceiptInformationServiceImpl implements CashReceiptInformation
     public StringBuilder createCashReceiptPromoDiscount(String productName, BigDecimal promotionDiscount) {
         return new StringBuilder("""
                 PromoDiscount -10%s : "%s"
-                more then 5 items: -%s
+                more than 5 items: -%s
                 """.formatted(
                 "%",
                 productName,

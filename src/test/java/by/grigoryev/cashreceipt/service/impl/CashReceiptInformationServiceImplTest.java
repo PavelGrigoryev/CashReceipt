@@ -54,7 +54,7 @@ class CashReceiptInformationServiceImplTest {
         Product mockedProduct = getMockedProduct();
 
         String expectedValue = """
-                %s  | %-12s | %-6s | %s
+                %s  | %-15s | %-6s | %s
                 """.formatted(
                 mockedProduct.getQuantity(),
                 mockedProduct.getName(),
@@ -104,7 +104,7 @@ class CashReceiptInformationServiceImplTest {
 
         String expectedValue = """
                 PromoDiscount -10%s : "%s"
-                more then 5 items: -%s
+                more than 5 items: -%s
                 """.formatted(
                 "%",
                 productName,
