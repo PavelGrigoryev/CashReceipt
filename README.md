@@ -13,6 +13,7 @@
 * Lombok
 * Postgresql
 * Liquibase
+* Swagger
 * Docker
 
 ### Instructions to run application locally:
@@ -22,7 +23,7 @@
    installed
 2. In Postgresql you have to create a database with name "cash_receipt". Sql: CREATE DATABASE cash_receipt
 3. In [application.properties](src/main/resources/application.properties) enter your username and password from your
-   local postgresql in line №2, №3 and №9, №10. Also in line №1 and №11 there should be localhost and the line should
+   local postgresql in line №2, №3 and №9, №10. Also in line №1 and №11 there should be "localhost" and the line should
    look like this *=jdbc:postgresql://localhost:5432/cash_receipt
 4. Run [CashReceiptApplication.java](src/main/java/by/grigoryev/cashreceipt/CashReceiptApplication.java). Liquibase will
    create the required tables
@@ -31,10 +32,10 @@
 
 ### Instruction to run application in Docker container:
 
-1. You must have [Docker]() installed
+1. You must have [Docker](https://www.docker.com/) installed
 2. In [application.properties](src/main/resources/application.properties) enter your username and password from your
-   postgresql which will be deployed in docker in line №2, №3 and №9, №10. Also in line №1 and №11 there should be
-   postgres and the line should look like this *=jdbc:postgresql://postgres:5432/cash_receipt
+   postgresql in line №2, №3 and №9, №10, which will be deployed in docker. Also in line №1 and №11 there should be
+   "postgres" and the line should look like this *=jdbc:postgresql://postgres:5432/cash_receipt
 3. In [docker-compose.yml](docker-compose.yml) enter your username and password from your postgresql which will be
    deployed in docker in line №9, №10. They must be the same as in application.properties
 4. Run `./gradlew build`
@@ -51,7 +52,14 @@ executing:
 ./gradlew test
 ```
 
-The unit tests will also be run every time the Docker image is rebuilt.
+The unit tests will also be run every time the Docker image is rebuilt
+
+## Documentation
+
+To view the API Swagger documentation, start the application and see:
+
+* [http://localhost:8080/swagger-ui/index.html](http://localhost:8080/swagger-ui/index.html)
+* [http://localhost:8080/v3/api-docs](http://localhost:8080/v3/api-docs)
 
 ## Functionalities
 
@@ -65,7 +73,16 @@ In summary the application can:
       id=1 and quantity of 7 items, etc. discountCardNumber=9875 means that a discount card with the number 9875 was
       presented.
     * You can substitute your own values. Products available by default with id 1-5. and three cards with numbers 1234
-      (3%), 5678 (5%), 9875 (10%)
+      (3% discount), 5678 (5% discount), 9875 (10% discount)
+    * The cash receipt is also saved in a .txt file [CashReceipt.txt](CashReceipt.txt)
+
+***DiscountCardController [discountCard.http](src/main/resources/discountCard.http)***
+
+* **GET**
+    * Find all discount cards
+    * Find discount card by id
+* **POST**
+    * Save discount card
 
 ***ProductController [product.http](src/main/resources/product.http)***
 
@@ -76,11 +93,3 @@ In summary the application can:
     * Save product
 * **PUT**
     * Update product quantity by id
-
-***DiscountCardController [discountCard.http](src/main/resources/discountCard.http)***
-
-* **GET**
-    * Find all discount card
-    * Find discount card by id
-* **POST**
-    * Save discount card
