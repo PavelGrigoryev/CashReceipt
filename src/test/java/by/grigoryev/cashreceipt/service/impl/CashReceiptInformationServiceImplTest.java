@@ -54,7 +54,7 @@ class CashReceiptInformationServiceImplTest {
         Product mockedProduct = getMockedProduct();
 
         String expectedValue = """
-                %s  | %-15s | %-6s | %s
+                %-2s  | %-15s | %-6s | %s
                 """.formatted(
                 mockedProduct.getQuantity(),
                 mockedProduct.getName(),

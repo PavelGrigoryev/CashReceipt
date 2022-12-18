@@ -35,7 +35,7 @@ public class CashReceiptInformationServiceImpl implements CashReceiptInformation
     @Override
     public StringBuilder createCashReceiptBody(Product product) {
         return new StringBuilder("""
-                %s  | %-15s | %-6s | %s
+                %-2s  | %-15s | %-6s | %s
                 """.formatted(
                 product.getQuantity(),
                 product.getName(),
