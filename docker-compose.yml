@@ -6,8 +6,8 @@ services:
     ports:
       - "5432:5432"
     environment:
-      - POSTGRES_PASSWORD=enter your username here
-      - POSTGRES_USER=enter your password here
+      - POSTGRES_PASSWORD=enter your password here
+      - POSTGRES_USER=enter your username here
       - POSTGRES_DB=cash_receipt
     networks:
       - backend
