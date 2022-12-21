@@ -1,7 +1,7 @@
 package by.grigoryev.cashreceipt.service.impl;
 
-import by.grigoryev.cashreceipt.model.DiscountCard;
-import by.grigoryev.cashreceipt.model.Product;
+import by.grigoryev.cashreceipt.dto.DiscountCardDto;
+import by.grigoryev.cashreceipt.dto.ProductDto;
 import by.grigoryev.cashreceipt.service.CashReceiptInformationService;
 import by.grigoryev.cashreceipt.service.DiscountCardService;
 import by.grigoryev.cashreceipt.service.ProductService;
@@ -38,7 +38,7 @@ class CashReceiptLogicServiceImplTest {
     @DisplayName("testing getTotalSum method")
     void getTotalSum() {
         String idAndQuantity = "3-6 2-6 1-7";
-        List<Product> products = new ArrayList<>();
+        List<ProductDto> productDtoList = new ArrayList<>();
 
         String[] splitSpace = idAndQuantity.split(" ");
         BigDecimal expectedValue = new BigDecimal("0");
@@ -48,19 +48,19 @@ class CashReceiptLogicServiceImplTest {
             String id = splitHyphen[0];
             String quantity = splitHyphen[1];
 
-            doReturn(getMockedProduct(Long.valueOf(id), Integer.valueOf(quantity))).when(productService)
+            doReturn(getMockedProductDto(Long.valueOf(id), Integer.valueOf(quantity))).when(productService)
                     .update(Long.valueOf(id), Integer.valueOf(quantity));
 
-            Product product = productService.update(Long.valueOf(id), Integer.valueOf(quantity));
+            ProductDto productDto = productService.update(Long.valueOf(id), Integer.valueOf(quantity));
 
-            products.add(product);
-            expectedValue = expectedValue.add(product.getTotal());
+            productDtoList.add(productDto);
+            expectedValue = expectedValue.add(productDto.getTotal());
 
-            assertEquals(product.getId(), Long.valueOf(id));
-            assertEquals(product.getQuantity(), Integer.valueOf(quantity));
+            assertEquals(productDto.getId(), Long.valueOf(id));
+            assertEquals(productDto.getQuantity(), Integer.valueOf(quantity));
         }
 
-        BigDecimal totalSum = cashReceiptLogicService.getTotalSum(idAndQuantity, products);
+        BigDecimal totalSum = cashReceiptLogicService.getTotalSum(idAndQuantity, productDtoList);
 
         assertEquals(expectedValue, totalSum);
     }
@@ -68,13 +68,13 @@ class CashReceiptLogicServiceImplTest {
     @Test
     @DisplayName("testing getDiscount method")
     void getDiscount() {
-        DiscountCard discountCard = getMockedDiscountCard();
+        DiscountCardDto discountCardDto = getMockedDiscountCardDto();
         BigDecimal totalSum = new BigDecimal("255");
 
         BigDecimal expectedValue = totalSum.divide(BigDecimal.valueOf(100), 4, RoundingMode.UP)
-                .multiply(discountCard.getDiscountPercentage());
+                .multiply(discountCardDto.getDiscountPercentage());
 
-        BigDecimal discount = cashReceiptLogicService.getDiscount(totalSum, discountCard);
+        BigDecimal discount = cashReceiptLogicService.getDiscount(totalSum, discountCardDto);
 
         assertEquals(expectedValue, discount);
     }
@@ -84,52 +84,52 @@ class CashReceiptLogicServiceImplTest {
     void getTotalSumWithDiscount() {
         BigDecimal expectedValue = new BigDecimal("255");
 
-        List<Product> products = List.of(getMockedProduct(1L, 6));
+        List<ProductDto> productDtoList = List.of(getMockedProductDto(1L, 6));
 
         BigDecimal totalSumWithDiscount = cashReceiptLogicService.getTotalSumWithDiscount(
-                List.of(getMockedProduct(1L, 6)),
+                List.of(getMockedProductDto(1L, 6)),
                 expectedValue,
                 new StringBuilder(),
                 new StringBuilder()
         );
 
-        for (Product product : products) {
+        for (ProductDto productDto : productDtoList) {
 
             doReturn(new StringBuilder()).when(cashReceiptInformationService)
-                    .createCashReceiptBody(product);
+                    .createCashReceiptBody(productDto);
 
-            new StringBuilder(cashReceiptInformationService.createCashReceiptBody(product));
+            new StringBuilder(cashReceiptInformationService.createCashReceiptBody(productDto));
 
-            if (Boolean.TRUE.equals(product.getPromotion()) && product.getQuantity() > 5) {
+            if (Boolean.TRUE.equals(productDto.getPromotion()) && productDto.getQuantity() > 5) {
 
-                BigDecimal promotionDiscount = product.getTotal()
+                BigDecimal promotionDiscount = productDto.getTotal()
                         .divide(BigDecimal.valueOf(100), 4, RoundingMode.UP)
                         .multiply(BigDecimal.valueOf(10)).stripTrailingZeros();
                 expectedValue = expectedValue.subtract(promotionDiscount);
 
                 doReturn(new StringBuilder()).when(cashReceiptInformationService)
-                        .createCashReceiptPromoDiscount(product.getName(), promotionDiscount);
+                        .createCashReceiptPromoDiscount(productDto.getName(), promotionDiscount);
 
                 new StringBuilder
-                        (cashReceiptInformationService.createCashReceiptPromoDiscount(product.getName(), promotionDiscount));
+                        (cashReceiptInformationService.createCashReceiptPromoDiscount(productDto.getName(), promotionDiscount));
             }
 
         }
 
-        assertEquals(products.get(0), getMockedProduct(1L, 6));
+        assertEquals(productDtoList.get(0), getMockedProductDto(1L, 6));
         assertEquals(expectedValue, totalSumWithDiscount);
     }
 
-    private DiscountCard getMockedDiscountCard() {
-        return DiscountCard.builder()
+    private DiscountCardDto getMockedDiscountCardDto() {
+        return DiscountCardDto.builder()
                 .id(1L)
                 .discountCardNumber("1234")
                 .discountPercentage(BigDecimal.valueOf(3))
                 .build();
     }
 
-    private Product getMockedProduct(Long id, Integer quantity) {
-        return Product.builder()
+    private ProductDto getMockedProductDto(Long id, Integer quantity) {
+        return ProductDto.builder()
                 .id(id)
                 .quantity(quantity)
                 .name("Самовар золотой")

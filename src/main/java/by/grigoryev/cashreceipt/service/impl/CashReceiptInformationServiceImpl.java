@@ -1,6 +1,6 @@
 package by.grigoryev.cashreceipt.service.impl;
 
-import by.grigoryev.cashreceipt.model.Product;
+import by.grigoryev.cashreceipt.dto.ProductDto;
 import by.grigoryev.cashreceipt.service.CashReceiptInformationService;
 import org.springframework.stereotype.Service;
 
@@ -33,14 +33,14 @@ public class CashReceiptInformationServiceImpl implements CashReceiptInformation
     }
 
     @Override
-    public StringBuilder createCashReceiptBody(Product product) {
+    public StringBuilder createCashReceiptBody(ProductDto productDto) {
         return new StringBuilder("""
                 %-2s  | %-15s | %-6s | %s
                 """.formatted(
-                product.getQuantity(),
-                product.getName(),
-                product.getPrice(),
-                product.getTotal()
+                productDto.getQuantity(),
+                productDto.getName(),
+                productDto.getPrice(),
+                productDto.getTotal()
         ));
     }
 

@@ -1,6 +1,6 @@
 package by.grigoryev.cashreceipt.controller;
 
-import by.grigoryev.cashreceipt.model.DiscountCard;
+import by.grigoryev.cashreceipt.dto.DiscountCardDto;
 import by.grigoryev.cashreceipt.service.DiscountCardService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -25,7 +25,7 @@ public class DiscountCardController {
 
     @Operation(summary = "Find all discount cards", tags = "DiscountCard")
     @GetMapping
-    public ResponseEntity<List<DiscountCard>> findAll() {
+    public ResponseEntity<List<DiscountCardDto>> findAll() {
         return ResponseEntity.ok(discountCardService.findAll());
     }
 
@@ -34,7 +34,7 @@ public class DiscountCardController {
             parameters = @Parameter(name = "id", description = "Enter id here", example = "3")
     )
     @GetMapping("/{id}")
-    public ResponseEntity<DiscountCard> findById(@PathVariable Long id) {
+    public ResponseEntity<DiscountCardDto> findById(@PathVariable Long id) {
         return ResponseEntity.ok(discountCardService.findById(id));
     }
 
@@ -42,7 +42,7 @@ public class DiscountCardController {
             summary = "Save new discount card", tags = "DiscountCard",
             requestBody = @io.swagger.v3.oas.annotations.parameters
                     .RequestBody(description = "RequestBody for discount card",
-                    content = @Content(schema = @Schema(implementation = DiscountCard.class)
+                    content = @Content(schema = @Schema(implementation = DiscountCardDto.class)
                             , examples = @ExampleObject("""
                             {
                               "discountCardNumber": "7878",
@@ -52,8 +52,8 @@ public class DiscountCardController {
             )
     )
     @PostMapping
-    public ResponseEntity<DiscountCard> save(@RequestBody DiscountCard discountCard) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(discountCardService.save(discountCard));
+    public ResponseEntity<DiscountCardDto> save(@RequestBody DiscountCardDto discountCardDto) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(discountCardService.save(discountCardDto));
     }
 
 }

@@ -1,6 +1,6 @@
 package by.grigoryev.cashreceipt.controller;
 
-import by.grigoryev.cashreceipt.model.Product;
+import by.grigoryev.cashreceipt.dto.ProductDto;
 import by.grigoryev.cashreceipt.service.ProductService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -25,7 +25,7 @@ public class ProductController {
 
     @Operation(summary = "Find all products", tags = "Product")
     @GetMapping
-    public ResponseEntity<List<Product>> findAll() {
+    public ResponseEntity<List<ProductDto>> findAll() {
         return ResponseEntity.ok(productService.findAll());
     }
 
@@ -34,7 +34,7 @@ public class ProductController {
             parameters = @Parameter(name = "id", description = "Enter id here", example = "2")
     )
     @GetMapping("/{id}")
-    public ResponseEntity<Product> findById(@PathVariable Long id) {
+    public ResponseEntity<ProductDto> findById(@PathVariable Long id) {
         return ResponseEntity.ok(productService.findById(id));
     }
 
@@ -42,7 +42,7 @@ public class ProductController {
             summary = "Save new product", tags = "Product",
             requestBody = @io.swagger.v3.oas.annotations.parameters
                     .RequestBody(description = "RequestBody for product",
-                    content = @Content(schema = @Schema(implementation = Product.class)
+                    content = @Content(schema = @Schema(implementation = ProductDto.class)
                             , examples = @ExampleObject("""
                             {
                               "quantity": 1,
@@ -54,8 +54,8 @@ public class ProductController {
             )
     )
     @PostMapping
-    public ResponseEntity<Product> save(@RequestBody Product product) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(productService.save(product));
+    public ResponseEntity<ProductDto> save(@RequestBody ProductDto productDto) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(productService.save(productDto));
     }
 
     @Operation(
@@ -68,7 +68,7 @@ public class ProductController {
             }
     )
     @PutMapping
-    public ResponseEntity<Product> update(@RequestParam Long id, Integer quantity) {
+    public ResponseEntity<ProductDto> update(@RequestParam Long id, Integer quantity) {
         return ResponseEntity.ok(productService.update(id, quantity));
     }
 

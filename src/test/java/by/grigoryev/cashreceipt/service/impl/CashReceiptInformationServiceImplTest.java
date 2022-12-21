@@ -1,6 +1,6 @@
 package by.grigoryev.cashreceipt.service.impl;
 
-import by.grigoryev.cashreceipt.model.Product;
+import by.grigoryev.cashreceipt.dto.ProductDto;
 import by.grigoryev.cashreceipt.service.CashReceiptInformationService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -12,7 +12,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.spy;
 
 class CashReceiptInformationServiceImplTest {
@@ -51,18 +51,18 @@ class CashReceiptInformationServiceImplTest {
     @Test
     @DisplayName("testing createCashReceiptBody method")
     void createCashReceiptBody() {
-        Product mockedProduct = getMockedProduct();
+        ProductDto mockedProductDto = getMockedProductDto();
 
         String expectedValue = """
                 %-2s  | %-15s | %-6s | %s
                 """.formatted(
-                mockedProduct.getQuantity(),
-                mockedProduct.getName(),
-                mockedProduct.getPrice(),
-                mockedProduct.getTotal()
+                mockedProductDto.getQuantity(),
+                mockedProductDto.getName(),
+                mockedProductDto.getPrice(),
+                mockedProductDto.getTotal()
         );
 
-        StringBuilder checkBody = cashReceiptInformationService.createCashReceiptBody(mockedProduct);
+        StringBuilder checkBody = cashReceiptInformationService.createCashReceiptBody(mockedProductDto);
 
         assertEquals(expectedValue, checkBody.toString());
     }
@@ -91,7 +91,8 @@ class CashReceiptInformationServiceImplTest {
         );
 
         StringBuilder checkResults = cashReceiptInformationService
-                .createCashReceiptResults(totalSum, discountCardPercentage, discount, promoDiscBuilder, totalSumWithDiscount);
+                .createCashReceiptResults(totalSum, discountCardPercentage, discount,
+                        promoDiscBuilder, totalSumWithDiscount);
 
         assertEquals(expectedValue, checkResults.toString());
     }
@@ -99,8 +100,8 @@ class CashReceiptInformationServiceImplTest {
     @Test
     @DisplayName("testing createCashReceiptPromoDiscount method")
     void createCashReceiptPromoDiscount() {
-        String productName = getMockedProduct().getName();
-        BigDecimal promotionDiscount = getMockedProduct().getPrice();
+        String productName = getMockedProductDto().getName();
+        BigDecimal promotionDiscount = getMockedProductDto().getPrice();
 
         String expectedValue = """
                 PromoDiscount -10%s : "%s"
@@ -117,8 +118,8 @@ class CashReceiptInformationServiceImplTest {
         assertEquals(expectedValue, checkPromoDiscount.toString());
     }
 
-    private Product getMockedProduct() {
-        return Product.builder()
+    private ProductDto getMockedProductDto() {
+        return ProductDto.builder()
                 .id(1L)
                 .quantity(3)
                 .name("Самовар золотой")

@@ -1,6 +1,6 @@
 package by.grigoryev.cashreceipt.controller;
 
-import by.grigoryev.cashreceipt.model.DiscountCard;
+import by.grigoryev.cashreceipt.dto.DiscountCardDto;
 import by.grigoryev.cashreceipt.service.DiscountCardService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -56,7 +56,7 @@ class DiscountCardControllerTest {
     @Test
     @DisplayName("testing findAll endpoint with filled list of elements")
     void findAllWithFilledValues() throws Exception {
-        doReturn(List.of(getMockedDiscountCard())).when(discountCardService).findAll();
+        doReturn(List.of(getMockedDiscountCardDto())).when(discountCardService).findAll();
 
         mockMvc.perform(get("/discountCards"))
                 .andExpect(status().isOk())
@@ -66,7 +66,7 @@ class DiscountCardControllerTest {
     @Test
     @DisplayName("testing findById endpoint with exist element")
     void findByIdWithExistElement() throws Exception {
-        doReturn(getMockedDiscountCard()).when(discountCardService)
+        doReturn(getMockedDiscountCardDto()).when(discountCardService)
                 .findById(ID);
 
         mockMvc.perform(get("/discountCards/" + ID))
@@ -77,8 +77,8 @@ class DiscountCardControllerTest {
     @Test
     @DisplayName("testing save endpoint")
     void save() throws Exception {
-        doReturn(getMockedDiscountCard()).when(discountCardService)
-                .save(any(DiscountCard.class));
+        doReturn(getMockedDiscountCardDto()).when(discountCardService)
+                .save(any(DiscountCardDto.class));
 
         mockMvc.perform(post("/discountCards")
                         .content(JSON_CONTENT)
@@ -90,16 +90,16 @@ class DiscountCardControllerTest {
     @Test
     @DisplayName("testing save endpoint with bad request")
     void saveWithBadRequest() throws Exception {
-        doReturn(getMockedDiscountCard()).when(discountCardService)
-                .save(any(DiscountCard.class));
+        doReturn(getMockedDiscountCardDto()).when(discountCardService)
+                .save(any(DiscountCardDto.class));
 
         mockMvc.perform(post("/discountCards")
                         .contentType(APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
     }
 
-    private DiscountCard getMockedDiscountCard() {
-        return DiscountCard.builder()
+    private DiscountCardDto getMockedDiscountCardDto() {
+        return DiscountCardDto.builder()
                 .id(ID)
                 .discountCardNumber(DISCOUNT_CARD_NUMBER)
                 .discountPercentage(DISCOUNT_PERCENTAGE)

@@ -1,6 +1,6 @@
 package by.grigoryev.cashreceipt.service;
 
-import by.grigoryev.cashreceipt.model.Product;
+import by.grigoryev.cashreceipt.dto.ProductDto;
 
 import java.math.BigDecimal;
 
@@ -8,7 +8,7 @@ public interface CashReceiptInformationService {
 
     StringBuilder createCashReceiptHeader();
 
-    StringBuilder createCashReceiptBody(Product product);
+    StringBuilder createCashReceiptBody(ProductDto productDto);
 
     StringBuilder createCashReceiptResults(BigDecimal totalSum,
                                            BigDecimal discountCardPercentage,

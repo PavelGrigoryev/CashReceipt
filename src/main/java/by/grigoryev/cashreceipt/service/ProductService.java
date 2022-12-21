@@ -1,17 +1,17 @@
 package by.grigoryev.cashreceipt.service;
 
-import by.grigoryev.cashreceipt.model.Product;
+import by.grigoryev.cashreceipt.dto.ProductDto;
 
 import java.util.List;
 
 public interface ProductService {
 
-    List<Product> findAll();
+    List<ProductDto> findAll();
 
-    Product findById(Long id);
+    ProductDto findById(Long id);
 
-    Product save(Product product);
+    ProductDto save(ProductDto productDto);
 
-    Product update(Long id, Integer quantity);
+    ProductDto update(Long id, Integer quantity);
 
 }

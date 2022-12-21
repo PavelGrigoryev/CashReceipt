@@ -1,12 +1,15 @@
 package by.grigoryev.cashreceipt.service.impl;
 
+import by.grigoryev.cashreceipt.dto.DiscountCardDto;
 import by.grigoryev.cashreceipt.exception.NoSuchDiscountCardException;
+import by.grigoryev.cashreceipt.mapper.DiscountCardMapper;
 import by.grigoryev.cashreceipt.model.DiscountCard;
 import by.grigoryev.cashreceipt.repository.DiscountCardRepository;
 import by.grigoryev.cashreceipt.service.DiscountCardService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mapstruct.factory.Mappers;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -24,6 +27,7 @@ class DiscountCardServiceImplTest {
 
     private DiscountCardService discountCardService;
     private DiscountCardRepository discountCardRepository;
+    private final DiscountCardMapper discountCardMapper = Mappers.getMapper(DiscountCardMapper.class);
 
     @BeforeEach
     void setUp() {
@@ -37,7 +41,10 @@ class DiscountCardServiceImplTest {
         DiscountCard discountCard = getMockedDiscountCard();
 
         doReturn(List.of(discountCard)).when(discountCardRepository).findAll();
-        List<DiscountCard> discountCards = discountCardService.findAll();
+        List<DiscountCard> discountCards = discountCardService.findAll()
+                .stream()
+                .map(discountCardMapper::fromDiscountCardDto)
+                .toList();
         assertEquals(1, discountCards.size());
         assertEquals(discountCard, discountCards.get(0));
     }
@@ -61,7 +68,8 @@ class DiscountCardServiceImplTest {
         doReturn(Optional.of(mockedDiscountCard))
                 .when(discountCardRepository).findById(ID);
 
-        DiscountCard discountCard = discountCardService.findById(ID);
+        DiscountCardDto discountCardDto = discountCardService.findById(ID);
+        DiscountCard discountCard = discountCardMapper.fromDiscountCardDto(discountCardDto);
 
         assertEquals(mockedDiscountCard, discountCard);
     }
@@ -74,7 +82,10 @@ class DiscountCardServiceImplTest {
                 .when(discountCardRepository)
                 .save(any(DiscountCard.class));
 
-        DiscountCard discountCard = discountCardService.save(mockedDiscountCard);
+        DiscountCardDto discountCardDto = discountCardService
+                .save(discountCardMapper.toDiscountCardDto(getMockedDiscountCard()));
+        DiscountCard discountCard = discountCardMapper.fromDiscountCardDto(discountCardDto);
+
         assertEquals(mockedDiscountCard, discountCard);
     }
 
@@ -99,7 +110,8 @@ class DiscountCardServiceImplTest {
         doReturn(Optional.of(mockedDiscountCard))
                 .when(discountCardRepository).findByDiscountCardNumber(DISCOUNT_CARD_NUMBER);
 
-        DiscountCard discountCard = discountCardService.findByDiscountCardNumber(DISCOUNT_CARD_NUMBER);
+        DiscountCardDto discountCardDto = discountCardService.findByDiscountCardNumber(DISCOUNT_CARD_NUMBER);
+        DiscountCard discountCard = discountCardMapper.fromDiscountCardDto(discountCardDto);
 
         assertEquals(mockedDiscountCard, discountCard);
     }

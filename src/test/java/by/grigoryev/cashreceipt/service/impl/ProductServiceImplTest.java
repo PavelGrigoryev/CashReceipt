@@ -1,12 +1,15 @@
 package by.grigoryev.cashreceipt.service.impl;
 
+import by.grigoryev.cashreceipt.dto.ProductDto;
 import by.grigoryev.cashreceipt.exception.NoSuchProductException;
+import by.grigoryev.cashreceipt.mapper.ProductMapper;
 import by.grigoryev.cashreceipt.model.Product;
 import by.grigoryev.cashreceipt.repository.ProductRepository;
 import by.grigoryev.cashreceipt.service.ProductService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mapstruct.factory.Mappers;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -28,6 +31,7 @@ class ProductServiceImplTest {
 
     private ProductService productService;
     private ProductRepository productRepository;
+    private final ProductMapper productMapper = Mappers.getMapper(ProductMapper.class);
 
     @BeforeEach
     void setUp() {
@@ -41,7 +45,10 @@ class ProductServiceImplTest {
         Product product = getMockedProduct();
 
         doReturn(List.of(product)).when(productRepository).findAll();
-        List<Product> products = productService.findAll();
+        List<Product> products = productService.findAll()
+                .stream()
+                .map(productMapper::fromProductDto)
+                .toList();
         assertEquals(1, products.size());
         assertEquals(product, products.get(0));
     }
@@ -65,7 +72,8 @@ class ProductServiceImplTest {
         doReturn(Optional.of(mockedProduct))
                 .when(productRepository).findById(ID);
 
-        Product product = productService.findById(ID);
+        ProductDto productDto = productService.findById(ID);
+        Product product = productMapper.fromProductDto(productDto);
 
         assertEquals(mockedProduct, product);
     }
@@ -78,7 +86,9 @@ class ProductServiceImplTest {
                 .when(productRepository)
                 .save(any(Product.class));
 
-        Product product = productService.save(mockedProduct);
+        ProductDto productDto = productService.save(productMapper.toProductDto(getMockedProduct()));
+        Product product = productMapper.fromProductDto(productDto);
+
         assertEquals(mockedProduct, product);
     }
 
@@ -98,11 +108,13 @@ class ProductServiceImplTest {
                     .when(productRepository)
                     .save(any(Product.class));
 
-            Product updatedProduct = productService.save(mockedProduct);
-            assertEquals(mockedProduct, updatedProduct);
+            Product product = productRepository.save(mockedProduct);
+
+            assertEquals(mockedProduct, product);
         }
 
-        Product product = productService.update(ID, QUANTITY);
+        ProductDto productDto = productService.update(ID, QUANTITY);
+        Product product = productMapper.fromProductDto(productDto);
 
         assertEquals(mockedProduct, product);
     }

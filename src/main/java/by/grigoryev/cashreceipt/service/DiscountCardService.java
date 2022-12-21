@@ -1,17 +1,17 @@
 package by.grigoryev.cashreceipt.service;
 
-import by.grigoryev.cashreceipt.model.DiscountCard;
+import by.grigoryev.cashreceipt.dto.DiscountCardDto;
 
 import java.util.List;
 
 public interface DiscountCardService {
 
-    List<DiscountCard> findAll();
+    List<DiscountCardDto> findAll();
 
-    DiscountCard findById(Long id);
+    DiscountCardDto findById(Long id);
 
-    DiscountCard save(DiscountCard discountCard);
+    DiscountCardDto save(DiscountCardDto discountCardDto);
 
-    DiscountCard findByDiscountCardNumber(String discountCardNumber);
+    DiscountCardDto findByDiscountCardNumber(String discountCardNumber);
 
 }

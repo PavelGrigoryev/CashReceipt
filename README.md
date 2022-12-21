@@ -11,6 +11,7 @@
 * Spring-boot-starter-web (Apache Tomcat)
 * Spring-boot-starter-test
 * Lombok
+* Mapstruct
 * Postgresql
 * Liquibase
 * Swagger

@@ -1,6 +1,6 @@
 package by.grigoryev.cashreceipt.controller;
 
-import by.grigoryev.cashreceipt.model.Product;
+import by.grigoryev.cashreceipt.dto.ProductDto;
 import by.grigoryev.cashreceipt.service.ProductService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -60,7 +60,7 @@ class ProductControllerTest {
     @Test
     @DisplayName("testing findAll endpoint with filled list of elements")
     void findAllWithFilledValues() throws Exception {
-        doReturn(List.of(getMockedProduct())).when(productService).findAll();
+        doReturn(List.of(getMockedProductDto())).when(productService).findAll();
 
         mockMvc.perform(get("/products"))
                 .andExpect(status().isOk())
@@ -70,7 +70,7 @@ class ProductControllerTest {
     @Test
     @DisplayName("testing findById endpoint with exist element")
     void findByIdWithExistElement() throws Exception {
-        doReturn(getMockedProduct()).when(productService)
+        doReturn(getMockedProductDto()).when(productService)
                 .findById(ID);
 
         mockMvc.perform(get("/products/" + ID))
@@ -81,8 +81,8 @@ class ProductControllerTest {
     @Test
     @DisplayName("testing save endpoint")
     void save() throws Exception {
-        doReturn(getMockedProduct()).when(productService)
-                .save(any(Product.class));
+        doReturn(getMockedProductDto()).when(productService)
+                .save(any(ProductDto.class));
 
         mockMvc.perform(post("/products")
                         .content(JSON_CONTENT)
@@ -94,7 +94,7 @@ class ProductControllerTest {
     @Test
     @DisplayName("testing update endpoint")
     void update() throws Exception {
-        doReturn(getMockedProduct()).when(productService)
+        doReturn(getMockedProductDto()).when(productService)
                 .update(anyLong(), anyInt());
 
         mockMvc.perform(put("/products/?id=" + ID + "&quantity=" + QUANTITY)
@@ -107,16 +107,16 @@ class ProductControllerTest {
     @Test
     @DisplayName("testing save endpoint with bad request")
     void saveWithBadRequest() throws Exception {
-        doReturn(getMockedProduct()).when(productService)
-                .save(any(Product.class));
+        doReturn(getMockedProductDto()).when(productService)
+                .save(any(ProductDto.class));
 
         mockMvc.perform(post("/products")
                         .contentType(APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
     }
 
-    private Product getMockedProduct() {
-        return Product.builder()
+    private ProductDto getMockedProductDto() {
+        return ProductDto.builder()
                 .id(ID)
                 .quantity(QUANTITY)
                 .name(NAME)

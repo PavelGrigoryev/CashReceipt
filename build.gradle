@@ -23,10 +23,14 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.liquibase:liquibase-core'
     implementation 'org.springdoc:springdoc-openapi-ui:1.6.13'
+    implementation 'org.mapstruct:mapstruct:1.5.3.Final'
+    annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.3.Final'
     compileOnly 'org.projectlombok:lombok'
     runtimeOnly 'org.postgresql:postgresql'
     annotationProcessor 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok-mapstruct-binding:0.2.0'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testAnnotationProcessor 'org.mapstruct:mapstruct-processor:1.5.3.Final'
 }
 
 tasks.named('test') {
