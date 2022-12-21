@@ -1,7 +1,9 @@
 package by.grigoryev.cashreceipt.service;
 
+import java.nio.file.Path;
+
 public interface UploadFileService {
 
-    void uploadFile(String cashReceipt);
+    Path uploadFile(String cashReceipt);
 
 }

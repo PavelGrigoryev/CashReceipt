@@ -1,18 +1,15 @@
-
 Cash Receipt
-DATE: 2022-12-21 TIME: 13:43:08
+DATE: 2022-12-21 TIME: 15:23:48
 ----------------------------------------
 QTY    DESCRIPTION      PRICE    TOTAL
 6   | Woolen gloves   | 30.89  | 185.34
-6   | Edible noodles  | 7.41   | 44.46
-7   | Spicy pretzel   | 5.76   | 40.32
+6   | Golden samovar  | 100.99 | 605.94
+7   | Rock-drill Bosh | 575.25 | 4026.75
 ========================================
-TOTAL: 270.12
-DiscountCard -7.5% : -20.259
+TOTAL: 4818.03
+DiscountCard -10% : -481.803
 PromoDiscount -10% : "Woolen gloves"
 more than 5 items: -18.534
-PromoDiscount -10% : "Edible noodles"
-more than 5 items: -4.446
-PromoDiscount -10% : "Spicy pretzel"
-more than 5 items: -4.032
-TOTAL PAID: 222.85
+PromoDiscount -10% : "Rock-drill Bosh"
+more than 5 items: -402.675
+TOTAL PAID: 3915.02
