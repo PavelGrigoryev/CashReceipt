@@ -1,0 +1,18 @@
+
+Cash Receipt
+DATE: 2022-12-21 TIME: 13:43:08
+----------------------------------------
+QTY    DESCRIPTION      PRICE    TOTAL
+6   | Woolen gloves   | 30.89  | 185.34
+6   | Edible noodles  | 7.41   | 44.46
+7   | Spicy pretzel   | 5.76   | 40.32
+========================================
+TOTAL: 270.12
+DiscountCard -7.5% : -20.259
+PromoDiscount -10% : "Woolen gloves"
+more than 5 items: -18.534
+PromoDiscount -10% : "Edible noodles"
+more than 5 items: -4.446
+PromoDiscount -10% : "Spicy pretzel"
+more than 5 items: -4.032
+TOTAL PAID: 222.85
