@@ -25,10 +25,8 @@ public class DiscountCardServiceImpl implements DiscountCardService {
 
     @Override
     public List<DiscountCardDto> findAll() {
-        List<DiscountCardDto> discountCardDtoList = discountCardRepository.findAll()
-                .stream()
-                .map(discountCardMapper::toDiscountCardDto)
-                .toList();
+        List<DiscountCardDto> discountCardDtoList =
+                discountCardMapper.toDiscountCardDtoList(discountCardRepository.findAll());
         log.info("findAll {}", discountCardDtoList);
         return discountCardDtoList;
     }
@@ -55,7 +53,7 @@ public class DiscountCardServiceImpl implements DiscountCardService {
     public DiscountCardDto findByDiscountCardNumber(String discountCardNumber) {
         DiscountCard discountCard = discountCardRepository.findByDiscountCardNumber(discountCardNumber)
                 .orElseThrow(() -> new NoSuchDiscountCardException("DiscountCard with card number " +
-                        discountCardNumber + " does not exist"));
+                                                                   discountCardNumber + " does not exist"));
         DiscountCardDto discountCardDto = discountCardMapper.toDiscountCardDto(discountCard);
         log.info("findByDiscountCardNumber {}", discountCardDto);
         return discountCardDto;

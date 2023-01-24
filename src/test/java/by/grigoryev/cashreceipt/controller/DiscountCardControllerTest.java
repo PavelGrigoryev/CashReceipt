@@ -99,11 +99,11 @@ class DiscountCardControllerTest {
     }
 
     private DiscountCardDto getMockedDiscountCardDto() {
-        return DiscountCardDto.builder()
-                .id(ID)
-                .discountCardNumber(DISCOUNT_CARD_NUMBER)
-                .discountPercentage(DISCOUNT_PERCENTAGE)
-                .build();
+        return new DiscountCardDto(
+                ID,
+                DISCOUNT_CARD_NUMBER,
+                DISCOUNT_PERCENTAGE
+        );
     }
 
 }

@@ -12,6 +12,7 @@ import org.mapstruct.factory.Mappers;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.Comparator;
 import java.util.List;
 
 @Slf4j
@@ -25,10 +26,8 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public List<ProductDto> findAll() {
-        List<ProductDto> productDtoList = productRepository.findAll()
-                .stream()
-                .map(productMapper::toProductDto)
-                .toList();
+        List<ProductDto> productDtoList = productMapper.toProductDtoList(productRepository.findAll());
+        productDtoList.sort(Comparator.comparing(ProductDto::id));
         log.info("findAll {}", productDtoList);
         return productDtoList;
     }

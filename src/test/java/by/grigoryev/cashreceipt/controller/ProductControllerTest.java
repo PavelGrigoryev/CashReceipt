@@ -116,14 +116,14 @@ class ProductControllerTest {
     }
 
     private ProductDto getMockedProductDto() {
-        return ProductDto.builder()
-                .id(ID)
-                .quantity(QUANTITY)
-                .name(NAME)
-                .price(PRICE)
-                .total(PRICE.multiply(BigDecimal.valueOf(QUANTITY)))
-                .promotion(PROMOTION)
-                .build();
+        return new ProductDto(
+                ID,
+                QUANTITY,
+                NAME,
+                PRICE,
+                PRICE.multiply(BigDecimal.valueOf(QUANTITY)),
+                PROMOTION
+        );
     }
 
 }

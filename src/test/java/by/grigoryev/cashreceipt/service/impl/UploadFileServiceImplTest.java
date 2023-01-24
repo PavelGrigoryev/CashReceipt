@@ -19,6 +19,7 @@ class UploadFileServiceImplTest {
     private UploadFileService uploadFileService;
 
     public static final String CASH_RECEIPT = """
+            
             Cash Receipt
             DATE: 2022-12-21 TIME: 15:23:48
             ----------------------------------------
@@ -44,7 +45,7 @@ class UploadFileServiceImplTest {
     @Test
     @DisplayName("testing uploadFile method for the existence of the file")
     void uploadFile() throws IOException {
-        Path absolutePath = Paths.get("CashReceipt.txt").toAbsolutePath();
+        Path absolutePath = Paths.get("CashReceipt1.txt").toAbsolutePath();
         Path expectedValue = Files.write(absolutePath, CASH_RECEIPT.getBytes());
 
         Path uploadFile = uploadFileService.uploadFile(CASH_RECEIPT);

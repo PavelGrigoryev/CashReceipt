@@ -41,7 +41,7 @@ public class CashReceiptLogicServiceImpl implements CashReceiptLogicService {
                 checkBuilder, promoDiscBuilder);
 
         checkBuilder.append(cashReceiptInformationService.createCashReceiptResults(totalSum,
-                discountCardDto.getDiscountPercentage(), discount, promoDiscBuilder, totalSumWithDiscount));
+                discountCardDto.discountPercentage(), discount, promoDiscBuilder, totalSumWithDiscount));
 
         uploadFileService.uploadFile(checkBuilder.toString());
 
@@ -61,14 +61,14 @@ public class CashReceiptLogicServiceImpl implements CashReceiptLogicService {
             ProductDto productDto = productService.update(Long.valueOf(id), Integer.valueOf(quantity));
 
             productDtoList.add(productDto);
-            totalSum = totalSum.add(productDto.getTotal());
+            totalSum = totalSum.add(productDto.total());
         }
         return totalSum;
     }
 
     protected BigDecimal getDiscount(BigDecimal totalSum, DiscountCardDto discountCardDto) {
         return totalSum.divide(BigDecimal.valueOf(100), 4, RoundingMode.UP)
-                .multiply(discountCardDto.getDiscountPercentage());
+                .multiply(discountCardDto.discountPercentage());
     }
 
     protected BigDecimal getTotalSumWithDiscount(List<ProductDto> productDtoList,
@@ -78,14 +78,14 @@ public class CashReceiptLogicServiceImpl implements CashReceiptLogicService {
         for (ProductDto productDto : productDtoList) {
             checkBuilder.append(cashReceiptInformationService.createCashReceiptBody(productDto));
 
-            if (Boolean.TRUE.equals(productDto.getPromotion()) && productDto.getQuantity() > 5) {
-                BigDecimal promotionDiscount = productDto.getTotal()
+            if (Boolean.TRUE.equals(productDto.promotion()) && productDto.quantity() > 5) {
+                BigDecimal promotionDiscount = productDto.total()
                         .divide(BigDecimal.valueOf(100), 4, RoundingMode.UP)
                         .multiply(BigDecimal.valueOf(10)).stripTrailingZeros();
                 totalSumWithDiscount = totalSumWithDiscount.subtract(promotionDiscount);
                 promoDiscBuilder
                         .append(cashReceiptInformationService
-                                .createCashReceiptPromoDiscount(productDto.getName(), promotionDiscount));
+                                .createCashReceiptPromoDiscount(productDto.name(), promotionDiscount));
             }
 
         }

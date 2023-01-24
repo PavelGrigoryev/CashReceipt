@@ -17,4 +17,5 @@ public class SwaggerSortConfig {
                 .sorted(Comparator.comparing(tag -> StringUtils.stripAccents(tag.getName())))
                 .toList());
     }
+
 }

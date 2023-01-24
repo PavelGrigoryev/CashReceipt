@@ -12,6 +12,7 @@ import java.nio.file.Paths;
 @Slf4j
 @Service
 public class UploadFileServiceImpl implements UploadFileService {
+
     @Override
     public Path uploadFile(String cashReceipt) {
         Path absolutePath = Paths.get("CashReceipt.txt").toAbsolutePath();

@@ -37,10 +37,10 @@ public class CashReceiptInformationServiceImpl implements CashReceiptInformation
         return new StringBuilder("""
                 %-2s  | %-15s | %-6s | %s
                 """.formatted(
-                productDto.getQuantity(),
-                productDto.getName(),
-                productDto.getPrice(),
-                productDto.getTotal()
+                productDto.quantity(),
+                productDto.name(),
+                productDto.price(),
+                productDto.total()
         ));
     }
 

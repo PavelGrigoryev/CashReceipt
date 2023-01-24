@@ -54,10 +54,10 @@ class CashReceiptLogicServiceImplTest {
             ProductDto productDto = productService.update(Long.valueOf(id), Integer.valueOf(quantity));
 
             productDtoList.add(productDto);
-            expectedValue = expectedValue.add(productDto.getTotal());
+            expectedValue = expectedValue.add(productDto.total());
 
-            assertEquals(productDto.getId(), Long.valueOf(id));
-            assertEquals(productDto.getQuantity(), Integer.valueOf(quantity));
+            assertEquals(productDto.id(), Long.valueOf(id));
+            assertEquals(productDto.quantity(), Integer.valueOf(quantity));
         }
 
         BigDecimal totalSum = cashReceiptLogicService.getTotalSum(idAndQuantity, productDtoList);
@@ -72,7 +72,7 @@ class CashReceiptLogicServiceImplTest {
         BigDecimal totalSum = new BigDecimal("255");
 
         BigDecimal expectedValue = totalSum.divide(BigDecimal.valueOf(100), 4, RoundingMode.UP)
-                .multiply(discountCardDto.getDiscountPercentage());
+                .multiply(discountCardDto.discountPercentage());
 
         BigDecimal discount = cashReceiptLogicService.getDiscount(totalSum, discountCardDto);
 
@@ -100,18 +100,18 @@ class CashReceiptLogicServiceImplTest {
 
             new StringBuilder(cashReceiptInformationService.createCashReceiptBody(productDto));
 
-            if (Boolean.TRUE.equals(productDto.getPromotion()) && productDto.getQuantity() > 5) {
+            if (Boolean.TRUE.equals(productDto.promotion()) && productDto.quantity() > 5) {
 
-                BigDecimal promotionDiscount = productDto.getTotal()
+                BigDecimal promotionDiscount = productDto.total()
                         .divide(BigDecimal.valueOf(100), 4, RoundingMode.UP)
                         .multiply(BigDecimal.valueOf(10)).stripTrailingZeros();
                 expectedValue = expectedValue.subtract(promotionDiscount);
 
                 doReturn(new StringBuilder()).when(cashReceiptInformationService)
-                        .createCashReceiptPromoDiscount(productDto.getName(), promotionDiscount);
+                        .createCashReceiptPromoDiscount(productDto.name(), promotionDiscount);
 
                 new StringBuilder
-                        (cashReceiptInformationService.createCashReceiptPromoDiscount(productDto.getName(), promotionDiscount));
+                        (cashReceiptInformationService.createCashReceiptPromoDiscount(productDto.name(), promotionDiscount));
             }
 
         }
@@ -121,22 +121,22 @@ class CashReceiptLogicServiceImplTest {
     }
 
     private DiscountCardDto getMockedDiscountCardDto() {
-        return DiscountCardDto.builder()
-                .id(1L)
-                .discountCardNumber("1234")
-                .discountPercentage(BigDecimal.valueOf(3))
-                .build();
+        return new DiscountCardDto(
+                1L,
+                "1234",
+                BigDecimal.valueOf(3)
+        );
     }
 
     private ProductDto getMockedProductDto(Long id, Integer quantity) {
-        return ProductDto.builder()
-                .id(id)
-                .quantity(quantity)
-                .name("Самовар золотой")
-                .price(BigDecimal.valueOf(256.24))
-                .total(BigDecimal.valueOf(256.24).multiply(BigDecimal.valueOf(3)))
-                .promotion(true)
-                .build();
+        return new ProductDto(
+                id,
+                quantity,
+                "Самовар золотой",
+                BigDecimal.valueOf(256.24),
+                BigDecimal.valueOf(256.24).multiply(BigDecimal.valueOf(3)),
+                true
+        );
     }
 
 }
