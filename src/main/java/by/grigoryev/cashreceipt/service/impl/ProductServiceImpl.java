@@ -34,18 +34,16 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public ProductDto findById(Long id) {
-        Product product = productRepository.findById(id)
-                .orElseThrow(() -> new NoSuchProductException("Product with ID " + id + " does not exist"));
-        ProductDto productDto = productMapper.toProductDto(product);
+        ProductDto productDto = productMapper.toProductDto(productRepository.findById(id)
+                .orElseThrow(() -> new NoSuchProductException("Product with ID " + id + " does not exist")));
         log.info("findById {}", productDto);
         return productDto;
     }
 
     @Override
     public ProductDto save(ProductDto productDto) {
-        Product product = productMapper.fromProductDto(productDto);
-        Product savedProduct = productRepository.save(createProduct(product));
-        ProductDto savedProductDto = productMapper.toProductDto(savedProduct);
+        ProductDto savedProductDto = productMapper.toProductDto(productRepository
+                .save(createProduct(productMapper.fromProductDto(productDto))));
         log.info("save {}", savedProductDto);
         return savedProductDto;
     }
