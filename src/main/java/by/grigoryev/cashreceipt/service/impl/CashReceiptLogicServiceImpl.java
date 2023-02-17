@@ -93,7 +93,7 @@ public class CashReceiptLogicServiceImpl implements CashReceiptLogicService {
                 .subtract(promoDiscountSum);
     }
 
-    private static BigDecimal getPromotionDiscount(ProductDto productDto) {
+    protected BigDecimal getPromotionDiscount(ProductDto productDto) {
         return productDto.total()
                 .divide(BigDecimal.valueOf(10), 4, RoundingMode.UP)
                 .stripTrailingZeros();
