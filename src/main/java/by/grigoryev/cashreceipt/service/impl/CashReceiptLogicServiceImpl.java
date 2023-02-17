@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @Slf4j
@@ -50,20 +51,19 @@ public class CashReceiptLogicServiceImpl implements CashReceiptLogicService {
     }
 
     protected BigDecimal getTotalSum(String idAndQuantity, List<ProductDto> productDtoList) {
-        String[] splitSpace = idAndQuantity.split(" ");
-        BigDecimal totalSum = new BigDecimal("0");
+        List<ProductDto> products = idAndQuantity.lines()
+                .map(s -> s.split(" "))
+                .flatMap(Arrays::stream)
+                .map(s -> s.split("-"))
+                .map(strings -> productService.update(Long.valueOf(strings[0]), Integer.valueOf(strings[1])))
+                .toList();
 
-        for (String string : splitSpace) {
-            String[] splitHyphen = string.split("-");
-            String id = splitHyphen[0];
-            String quantity = splitHyphen[1];
+        productDtoList.addAll(products);
 
-            ProductDto productDto = productService.update(Long.valueOf(id), Integer.valueOf(quantity));
-
-            productDtoList.add(productDto);
-            totalSum = totalSum.add(productDto.total());
-        }
-        return totalSum;
+        return products.stream()
+                .map(ProductDto::total)
+                .reduce(BigDecimal::add)
+                .orElse(BigDecimal.ZERO);
     }
 
     protected BigDecimal getDiscount(BigDecimal totalSum, DiscountCardDto discountCardDto) {
@@ -75,21 +75,28 @@ public class CashReceiptLogicServiceImpl implements CashReceiptLogicService {
                                                  BigDecimal totalSumWithDiscount,
                                                  StringBuilder checkBuilder,
                                                  StringBuilder promoDiscBuilder) {
-        for (ProductDto productDto : productDtoList) {
-            checkBuilder.append(cashReceiptInformationService.createCashReceiptBody(productDto));
+        productDtoList.forEach(productDto -> checkBuilder
+                .append(cashReceiptInformationService.createCashReceiptBody(productDto)));
 
-            if (Boolean.TRUE.equals(productDto.promotion()) && productDto.quantity() > 5) {
-                BigDecimal promotionDiscount = productDto.total()
-                        .divide(BigDecimal.valueOf(100), 4, RoundingMode.UP)
-                        .multiply(BigDecimal.valueOf(10)).stripTrailingZeros();
-                totalSumWithDiscount = totalSumWithDiscount.subtract(promotionDiscount);
-                promoDiscBuilder
-                        .append(cashReceiptInformationService
-                                .createCashReceiptPromoDiscount(productDto.name(), promotionDiscount));
-            }
+        BigDecimal promoDiscountSum = productDtoList.stream()
+                .filter(productDto -> productDto.promotion() && productDto.quantity() > 5)
+                .map(productDto -> {
+                    BigDecimal promotionDiscount = getPromotionDiscount(productDto);
+                    promoDiscBuilder.append(cashReceiptInformationService
+                            .createCashReceiptPromoDiscount(productDto.name(), promotionDiscount));
+                    return promotionDiscount;
+                })
+                .reduce(BigDecimal::add)
+                .orElse(BigDecimal.ZERO);
 
-        }
-        return totalSumWithDiscount;
+        return totalSumWithDiscount
+                .subtract(promoDiscountSum);
+    }
+
+    private static BigDecimal getPromotionDiscount(ProductDto productDto) {
+        return productDto.total()
+                .divide(BigDecimal.valueOf(10), 4, RoundingMode.UP)
+                .stripTrailingZeros();
     }
 
 }
