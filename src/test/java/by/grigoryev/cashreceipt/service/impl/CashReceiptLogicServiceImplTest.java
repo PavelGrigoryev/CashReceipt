@@ -11,23 +11,33 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
 class CashReceiptLogicServiceImplTest {
 
+    private static final String ID_AND_QUANTITY = "3-4";
+    private static final Long PRODUCT_ID = 3L;
+    private static final Integer QUANTITY = 4;
+    private static final String NAME = "Самовар золотой";
+    private static final BigDecimal PRICE = BigDecimal.valueOf(2.25);
+    private static final Boolean PROMOTION = true;
+    public static final Long DISCOUNT_CARD_ID = 1L;
+    public static final String DISCOUNT_CARD_NUMBER = "1234";
+    public static final BigDecimal DISCOUNT_PERCENTAGE = BigDecimal.valueOf(10);
+
     private ProductService productService;
+    private DiscountCardService discountCardService;
     private CashReceiptInformationService cashReceiptInformationService;
     private CashReceiptLogicServiceImpl cashReceiptLogicService;
 
     @BeforeEach
     void setUp() {
         productService = mock(ProductService.class);
-        DiscountCardService discountCardService = mock(DiscountCardService.class);
+        discountCardService = mock(DiscountCardService.class);
         cashReceiptInformationService = mock(CashReceiptInformationService.class);
         UploadFileService uploadFileService = mock(UploadFileService.class);
         cashReceiptLogicService = spy(new CashReceiptLogicServiceImpl(productService, discountCardService,
@@ -35,107 +45,104 @@ class CashReceiptLogicServiceImplTest {
     }
 
     @Test
-    @DisplayName("testing getTotalSum method")
-    void getTotalSum() {
-        String idAndQuantity = "3-6 2-6 1-7";
-        List<ProductDto> productDtoList = new ArrayList<>();
+    @DisplayName("createCashReceipt method should return string")
+    void createCashReceiptShouldReturnString() {
+        String expectedCashReceipt = "HeaderBodynull";
+        DiscountCardDto mockedDiscountCardDto = getMockedDiscountCardDto();
+        ProductDto mockedProductDto = getMockedProductDto();
 
-        String[] splitSpace = idAndQuantity.split(" ");
-        BigDecimal expectedValue = new BigDecimal("0");
+        doReturn(mockedDiscountCardDto)
+                .when(discountCardService)
+                .findByDiscountCardNumber(DISCOUNT_CARD_NUMBER);
 
-        for (String string : splitSpace) {
-            String[] splitHyphen = string.split("-");
-            String id = splitHyphen[0];
-            String quantity = splitHyphen[1];
+        doReturn(mockedProductDto)
+                .when(productService)
+                .update(PRODUCT_ID, QUANTITY);
 
-            doReturn(getMockedProductDto(Long.valueOf(id), Integer.valueOf(quantity))).when(productService)
-                    .update(Long.valueOf(id), Integer.valueOf(quantity));
+        doReturn(new StringBuilder("Header"))
+                .when(cashReceiptInformationService)
+                .createCashReceiptHeader();
 
-            ProductDto productDto = productService.update(Long.valueOf(id), Integer.valueOf(quantity));
+        doReturn(new StringBuilder("Body"))
+                .when(cashReceiptInformationService)
+                .createCashReceiptBody(mockedProductDto);
 
-            productDtoList.add(productDto);
-            expectedValue = expectedValue.add(productDto.total());
+        String actualCashReceipt = cashReceiptLogicService.createCashReceipt(ID_AND_QUANTITY, DISCOUNT_CARD_NUMBER);
 
-            assertEquals(productDto.id(), Long.valueOf(id));
-            assertEquals(productDto.quantity(), Integer.valueOf(quantity));
-        }
-
-        BigDecimal totalSum = cashReceiptLogicService.getTotalSum(idAndQuantity, productDtoList);
-
-        assertEquals(expectedValue, totalSum);
+        assertThat(actualCashReceipt).isEqualTo(expectedCashReceipt);
     }
 
     @Test
-    @DisplayName("testing getDiscount method")
-    void getDiscount() {
-        DiscountCardDto discountCardDto = getMockedDiscountCardDto();
-        BigDecimal totalSum = new BigDecimal("255");
+    @DisplayName("getTotalSum method should return 9")
+    void getTotalSumShouldReturnNine() {
+        BigDecimal expectedValue = new BigDecimal("9");
+        ProductDto mockedProductDto = getMockedProductDto();
+        List<ProductDto> mockedProductDtoList = new ArrayList<>();
+        mockedProductDtoList.add(mockedProductDto);
 
-        BigDecimal expectedValue = totalSum.divide(BigDecimal.valueOf(100), 4, RoundingMode.UP)
-                .multiply(discountCardDto.discountPercentage());
+        doReturn(mockedProductDto)
+                .when(productService)
+                .update(PRODUCT_ID, QUANTITY);
 
-        BigDecimal discount = cashReceiptLogicService.getDiscount(totalSum, discountCardDto);
+        BigDecimal actualValue = cashReceiptLogicService.getTotalSum(ID_AND_QUANTITY, mockedProductDtoList);
 
-        assertEquals(expectedValue, discount);
+        assertThat(actualValue.stripTrailingZeros()).isEqualTo(expectedValue);
     }
 
     @Test
-    @DisplayName("test getTotalSumWithDiscount method")
-    void getTotalSumWithDiscount() {
-        BigDecimal expectedValue = new BigDecimal("255");
+    @DisplayName("getDiscount method should return 3")
+    void getDiscountShouldReturnThree() {
+        DiscountCardDto mockedDiscountCardDto = getMockedDiscountCardDto();
+        BigDecimal expectedValue = new BigDecimal("3");
 
-        List<ProductDto> productDtoList = List.of(getMockedProductDto(1L, 6));
+        BigDecimal actualValue = cashReceiptLogicService.getDiscount(BigDecimal.valueOf(30), mockedDiscountCardDto);
 
-        BigDecimal totalSumWithDiscount = cashReceiptLogicService.getTotalSumWithDiscount(
-                List.of(getMockedProductDto(1L, 6)),
-                expectedValue,
-                new StringBuilder(),
-                new StringBuilder()
+        assertThat(actualValue.stripTrailingZeros()).isEqualTo(expectedValue);
+    }
+
+    @Test
+    @DisplayName("getTotalSumWithDiscount method should return 10")
+    void getTotalSumWithDiscountShouldReturnTen() {
+        BigDecimal expectedValue = new BigDecimal("10");
+        ProductDto mockedProductDto = getMockedProductDto();
+
+        BigDecimal actualValue = cashReceiptLogicService.getTotalSumWithDiscount(
+                List.of(mockedProductDto),
+                BigDecimal.valueOf(10),
+                new StringBuilder("checkBuilder"),
+                new StringBuilder("promoDiscBuilder")
         );
 
-        for (ProductDto productDto : productDtoList) {
+        assertThat(actualValue).isEqualTo(expectedValue);
+    }
 
-            doReturn(new StringBuilder()).when(cashReceiptInformationService)
-                    .createCashReceiptBody(productDto);
+    @Test
+    @DisplayName("getPromotionDiscount method should return 0.9")
+    void getPromotionDiscountShouldReturnZeroPointNine() {
+        ProductDto mockedProductDto = getMockedProductDto();
+        BigDecimal expectedValue = new BigDecimal("0.9");
 
-            new StringBuilder(cashReceiptInformationService.createCashReceiptBody(productDto));
+        BigDecimal actualValue = cashReceiptLogicService.getPromotionDiscount(mockedProductDto);
 
-            if (Boolean.TRUE.equals(productDto.promotion()) && productDto.quantity() > 5) {
-
-                BigDecimal promotionDiscount = productDto.total()
-                        .divide(BigDecimal.valueOf(100), 4, RoundingMode.UP)
-                        .multiply(BigDecimal.valueOf(10)).stripTrailingZeros();
-                expectedValue = expectedValue.subtract(promotionDiscount);
-
-                doReturn(new StringBuilder()).when(cashReceiptInformationService)
-                        .createCashReceiptPromoDiscount(productDto.name(), promotionDiscount);
-
-                new StringBuilder
-                        (cashReceiptInformationService.createCashReceiptPromoDiscount(productDto.name(), promotionDiscount));
-            }
-
-        }
-
-        assertEquals(productDtoList.get(0), getMockedProductDto(1L, 6));
-        assertEquals(expectedValue, totalSumWithDiscount);
+        assertThat(actualValue).isEqualTo(expectedValue);
     }
 
     private DiscountCardDto getMockedDiscountCardDto() {
         return new DiscountCardDto(
-                1L,
-                "1234",
-                BigDecimal.valueOf(3)
+                DISCOUNT_CARD_ID,
+                DISCOUNT_CARD_NUMBER,
+                DISCOUNT_PERCENTAGE
         );
     }
 
-    private ProductDto getMockedProductDto(Long id, Integer quantity) {
+    private ProductDto getMockedProductDto() {
         return new ProductDto(
-                id,
-                quantity,
-                "Самовар золотой",
-                BigDecimal.valueOf(256.24),
-                BigDecimal.valueOf(256.24).multiply(BigDecimal.valueOf(3)),
-                true
+                PRODUCT_ID,
+                QUANTITY,
+                NAME,
+                PRICE,
+                PRICE.multiply(BigDecimal.valueOf(QUANTITY)),
+                PROMOTION
         );
     }
 
