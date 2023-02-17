@@ -3,7 +3,6 @@ package by.grigoryev.cashreceipt.service.impl;
 import by.grigoryev.cashreceipt.dto.DiscountCardDto;
 import by.grigoryev.cashreceipt.exception.NoSuchDiscountCardException;
 import by.grigoryev.cashreceipt.mapper.DiscountCardMapper;
-import by.grigoryev.cashreceipt.model.DiscountCard;
 import by.grigoryev.cashreceipt.repository.DiscountCardRepository;
 import by.grigoryev.cashreceipt.service.DiscountCardService;
 import lombok.RequiredArgsConstructor;
@@ -33,28 +32,27 @@ public class DiscountCardServiceImpl implements DiscountCardService {
 
     @Override
     public DiscountCardDto findById(Long id) {
-        DiscountCard discountCard = discountCardRepository.findById(id)
-                .orElseThrow(() -> new NoSuchDiscountCardException("DiscountCard with ID " + id + " does not exist"));
-        DiscountCardDto discountCardDto = discountCardMapper.toDiscountCardDto(discountCard);
+        DiscountCardDto discountCardDto = discountCardMapper.toDiscountCardDto(discountCardRepository.findById(id)
+                .orElseThrow(() -> new NoSuchDiscountCardException("DiscountCard with ID " + id + " does not exist")));
         log.info("findById {}", discountCardDto);
         return discountCardDto;
     }
 
     @Override
     public DiscountCardDto save(DiscountCardDto discountCardDto) {
-        DiscountCard discountCard = discountCardMapper.fromDiscountCardDto(discountCardDto);
-        DiscountCard savedDiscountCard = discountCardRepository.save(discountCard);
-        DiscountCardDto savedDiscountCardDto = discountCardMapper.toDiscountCardDto(savedDiscountCard);
+        DiscountCardDto savedDiscountCardDto = discountCardMapper
+                .toDiscountCardDto(discountCardRepository.save(discountCardMapper.fromDiscountCardDto(discountCardDto)));
         log.info("save {}", savedDiscountCardDto);
         return savedDiscountCardDto;
     }
 
     @Override
     public DiscountCardDto findByDiscountCardNumber(String discountCardNumber) {
-        DiscountCard discountCard = discountCardRepository.findByDiscountCardNumber(discountCardNumber)
-                .orElseThrow(() -> new NoSuchDiscountCardException("DiscountCard with card number " +
-                                                                   discountCardNumber + " does not exist"));
-        DiscountCardDto discountCardDto = discountCardMapper.toDiscountCardDto(discountCard);
+        DiscountCardDto discountCardDto = discountCardMapper.toDiscountCardDto(
+                discountCardRepository.findByDiscountCardNumber(discountCardNumber)
+                        .orElseThrow(() -> new NoSuchDiscountCardException("DiscountCard with card number " +
+                                                                           discountCardNumber + " does not exist"))
+        );
         log.info("findByDiscountCardNumber {}", discountCardDto);
         return discountCardDto;
     }
