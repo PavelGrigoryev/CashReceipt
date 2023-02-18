@@ -25,9 +25,9 @@ class CashReceiptLogicServiceImplTest {
     private static final String NAME = "Самовар золотой";
     private static final BigDecimal PRICE = BigDecimal.valueOf(2.25);
     private static final Boolean PROMOTION = true;
-    public static final Long DISCOUNT_CARD_ID = 1L;
-    public static final String DISCOUNT_CARD_NUMBER = "1234";
-    public static final BigDecimal DISCOUNT_PERCENTAGE = BigDecimal.valueOf(10);
+    private static final Long DISCOUNT_CARD_ID = 1L;
+    private static final String DISCOUNT_CARD_NUMBER = "1234";
+    private static final BigDecimal DISCOUNT_PERCENTAGE = BigDecimal.valueOf(10);
 
     private ProductService productService;
     private DiscountCardService discountCardService;
@@ -45,9 +45,9 @@ class CashReceiptLogicServiceImplTest {
     }
 
     @Test
-    @DisplayName("createCashReceipt method should return string")
-    void createCashReceiptShouldReturnString() {
-        String expectedCashReceipt = "HeaderBodynull";
+    @DisplayName("createCashReceipt method should return expected string")
+    void createCashReceiptShouldReturnExpectedString() {
+        String expectedValue = "HeaderBodynull";
         DiscountCardDto mockedDiscountCardDto = getMockedDiscountCardDto();
         ProductDto mockedProductDto = getMockedProductDto();
 
@@ -67,9 +67,9 @@ class CashReceiptLogicServiceImplTest {
                 .when(cashReceiptInformationService)
                 .createCashReceiptBody(mockedProductDto);
 
-        String actualCashReceipt = cashReceiptLogicService.createCashReceipt(ID_AND_QUANTITY, DISCOUNT_CARD_NUMBER);
+        String actualValue = cashReceiptLogicService.createCashReceipt(ID_AND_QUANTITY, DISCOUNT_CARD_NUMBER);
 
-        assertThat(actualCashReceipt).isEqualTo(expectedCashReceipt);
+        assertThat(actualValue).isEqualTo(expectedValue);
     }
 
     @Test
