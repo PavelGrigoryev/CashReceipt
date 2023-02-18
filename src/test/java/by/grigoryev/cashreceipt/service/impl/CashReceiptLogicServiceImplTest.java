@@ -45,8 +45,8 @@ class CashReceiptLogicServiceImplTest {
     }
 
     @Test
-    @DisplayName("createCashReceipt method should return expected string")
-    void createCashReceiptShouldReturnExpectedString() {
+    @DisplayName("test createCashReceipt method should return expected string")
+    void testCreateCashReceiptShouldReturnExpectedString() {
         String expectedValue = "HeaderBodynull";
         DiscountCardDto mockedDiscountCardDto = getMockedDiscountCardDto();
         ProductDto mockedProductDto = getMockedProductDto();
@@ -73,8 +73,8 @@ class CashReceiptLogicServiceImplTest {
     }
 
     @Test
-    @DisplayName("getTotalSum method should return 9")
-    void getTotalSumShouldReturnNine() {
+    @DisplayName("test getTotalSum method should return 9")
+    void testGetTotalSumShouldReturnNine() {
         BigDecimal expectedValue = new BigDecimal("9");
         ProductDto mockedProductDto = getMockedProductDto();
         List<ProductDto> mockedProductDtoList = new ArrayList<>();
@@ -90,8 +90,8 @@ class CashReceiptLogicServiceImplTest {
     }
 
     @Test
-    @DisplayName("getDiscount method should return 3")
-    void getDiscountShouldReturnThree() {
+    @DisplayName("test getDiscount method should return 3")
+    void testGetDiscountShouldReturnThree() {
         DiscountCardDto mockedDiscountCardDto = getMockedDiscountCardDto();
         BigDecimal expectedValue = new BigDecimal("3");
 
@@ -101,8 +101,8 @@ class CashReceiptLogicServiceImplTest {
     }
 
     @Test
-    @DisplayName("getTotalSumWithDiscount method should return 10")
-    void getTotalSumWithDiscountShouldReturnTen() {
+    @DisplayName("test getTotalSumWithDiscount method should return 10")
+    void testGetTotalSumWithDiscountShouldReturnTen() {
         BigDecimal expectedValue = new BigDecimal("10");
         ProductDto mockedProductDto = getMockedProductDto();
 
@@ -117,8 +117,8 @@ class CashReceiptLogicServiceImplTest {
     }
 
     @Test
-    @DisplayName("getPromotionDiscount method should return 0.9")
-    void getPromotionDiscountShouldReturnZeroPointNine() {
+    @DisplayName("test getPromotionDiscount method should return 0.9")
+    void testGetPromotionDiscountShouldReturnZeroPointNine() {
         ProductDto mockedProductDto = getMockedProductDto();
         BigDecimal expectedValue = new BigDecimal("0.9");
 

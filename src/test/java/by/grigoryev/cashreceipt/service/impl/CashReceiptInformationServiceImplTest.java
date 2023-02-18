@@ -31,8 +31,8 @@ class CashReceiptInformationServiceImplTest {
     }
 
     @Test
-    @DisplayName("createCashReceiptHeader method should return expected string")
-    void createCashReceiptHeaderShouldReturnExpectedString() {
+    @DisplayName("test createCashReceiptHeader method should return expected string")
+    void testCreateCashReceiptHeaderShouldReturnExpectedString() {
         String expectedValue = """
                             
                 Cash Receipt
@@ -55,8 +55,8 @@ class CashReceiptInformationServiceImplTest {
     }
 
     @Test
-    @DisplayName("createCashReceiptBody method should return expected string")
-    void createCashReceiptBodyShouldReturnExpectedString() {
+    @DisplayName("test createCashReceiptBody method should return expected string")
+    void testCreateCashReceiptBodyShouldReturnExpectedString() {
         ProductDto mockedProductDto = getMockedProductDto();
 
         String expectedValue = """
@@ -74,8 +74,8 @@ class CashReceiptInformationServiceImplTest {
     }
 
     @Test
-    @DisplayName("createCashReceiptResults method should return expected string")
-    void createCashReceiptResultsShouldReturnExpectedString() {
+    @DisplayName("test createCashReceiptResults method should return expected string")
+    void testCreateCashReceiptResultsShouldReturnExpectedString() {
         BigDecimal totalSum = new BigDecimal("165.00");
         BigDecimal discountCardPercentage = new BigDecimal("3");
         BigDecimal discount = new BigDecimal("10.2500");
@@ -109,8 +109,8 @@ class CashReceiptInformationServiceImplTest {
     }
 
     @Test
-    @DisplayName("createCashReceiptPromoDiscount method should return expected string")
-    void createCashReceiptPromoDiscountShouldReturnExpectedString() {
+    @DisplayName("test createCashReceiptPromoDiscount method should return expected string")
+    void testCreateCashReceiptPromoDiscountShouldReturnExpectedString() {
         String expectedValue = """
                 PromoDiscount -10%s : "%s"
                 more than 5 items: -%s
