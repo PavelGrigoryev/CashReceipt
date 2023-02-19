@@ -8,6 +8,7 @@ import by.grigoryev.cashreceipt.repository.ProductRepository;
 import by.grigoryev.cashreceipt.service.ProductService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
 
@@ -40,126 +41,146 @@ class ProductServiceImplTest {
         productService = spy(new ProductServiceImpl(productRepository));
     }
 
-    @Test
-    @DisplayName("test findAll method should return List of size 1")
-    void testFindAllShouldReturnListOfSizeOne() {
-        Product mockedProduct = getMockedProduct();
-        int expectedSize = 1;
+    @Nested
+    class FindAllTest {
 
-        doReturn(List.of(mockedProduct))
-                .when(productRepository)
-                .findAll();
+        @Test
+        @DisplayName("test should return List of size 1")
+        void testFindAllShouldReturnListOfSizeOne() {
+            Product mockedProduct = getMockedProduct();
+            int expectedSize = 1;
 
-        List<ProductDto> actualValues = productService.findAll();
+            doReturn(List.of(mockedProduct))
+                    .when(productRepository)
+                    .findAll();
 
-        assertThat(actualValues).hasSize(expectedSize);
+            List<ProductDto> actualValues = productService.findAll();
+
+            assertThat(actualValues).hasSize(expectedSize);
+        }
+
+        @Test
+        @DisplayName("test should return sorted by id List of ProductDto")
+        void testFindAllShouldReturnSortedByIdListOfProductDto() {
+            List<Product> mockedProducts = getMockedProducts();
+            List<ProductDto> expectedValues = mockedProducts
+                    .stream()
+                    .map(productMapper::toProductDto)
+                    .sorted(Comparator.comparing(ProductDto::id))
+                    .toList();
+
+            doReturn(mockedProducts)
+                    .when(productRepository)
+                    .findAll();
+
+            List<ProductDto> actualValues = productService.findAll();
+
+            assertThat(actualValues).isEqualTo(expectedValues);
+        }
+
     }
 
-    @Test
-    @DisplayName("test findAll method should return sorted by id List of ProductDto")
-    void testFindAllShouldReturnSortedByIdListOfProductDto() {
-        List<Product> mockedProducts = getMockedProducts();
-        List<ProductDto> expectedValues = mockedProducts
-                .stream()
-                .map(productMapper::toProductDto)
-                .sorted(Comparator.comparing(ProductDto::id))
-                .toList();
+    @Nested
+    class FindByIdTest {
 
-        doReturn(mockedProducts)
-                .when(productRepository)
-                .findAll();
+        @Test
+        @DisplayName("test throw NoSuchProductException")
+        void testFindByIdThrowNoSuchProductException() {
+            Product mockedProduct = getMockedProduct();
 
-        List<ProductDto> actualValues = productService.findAll();
+            doReturn(Optional.of(mockedProduct))
+                    .when(productRepository)
+                    .findById(ID);
 
-        assertThat(actualValues).isEqualTo(expectedValues);
+            assertThrows(NoSuchProductException.class, () -> productService.findById(NEW_ID));
+        }
+
+        @Test
+        @DisplayName("test throw NoSuchProductException with expected message")
+        void testFindByIdThrowNoSuchProductExceptionWithExpectedMessage() {
+            String expectedMessage = "Product with ID " + ID + " does not exist";
+
+            Exception exception = assertThrows(NoSuchProductException.class, () -> productService.findById(ID));
+            String actualMessage = exception.getMessage();
+
+            assertThat(actualMessage).isEqualTo(expectedMessage);
+        }
+
+        @Test
+        @DisplayName("test should return expected ProductDto")
+        void testFindByIdShouldReturnExpectedProductDto() {
+            Product mockedProduct = getMockedProduct();
+            ProductDto expectedValue = productMapper.toProductDto(mockedProduct);
+
+            doReturn(Optional.of(mockedProduct))
+                    .when(productRepository)
+                    .findById(ID);
+
+            ProductDto actualValue = productService.findById(ID);
+
+            assertThat(actualValue).isEqualTo(expectedValue);
+        }
+
     }
 
-    @Test
-    @DisplayName("test findById method throw NoSuchProductException")
-    void testFindByIdThrowNoSuchProductException() {
-        Product mockedProduct = getMockedProduct();
+    @Nested
+    class SaveTest {
 
-        doReturn(Optional.of(mockedProduct))
-                .when(productRepository)
-                .findById(ID);
+        @Test
+        @DisplayName("test should return expected ProductDto")
+        void testSaveShouldReturnExpectedProductDto() {
+            Product mockedProduct = getMockedProduct();
+            ProductDto expectedValue = productMapper.toProductDto(mockedProduct);
 
-        assertThrows(NoSuchProductException.class, () -> productService.findById(NEW_ID));
+            doAnswer(invocationOnMock -> invocationOnMock.getArgument(0))
+                    .when(productRepository)
+                    .save(any(Product.class));
+
+            ProductDto actualValue = productService.save(productMapper.toProductDto(getMockedProduct()));
+
+            assertThat(actualValue).isEqualTo(expectedValue);
+        }
+
     }
 
-    @Test
-    @DisplayName("test findById method throw NoSuchProductException with expected message")
-    void testFindByIdThrowNoSuchProductExceptionWithExpectedMessage() {
-        String expectedMessage = "Product with ID " + ID + " does not exist";
+    @Nested
+    class UpdateTest {
 
-        Exception exception = assertThrows(NoSuchProductException.class, () -> productService.findById(ID));
-        String actualMessage = exception.getMessage();
+        @Test
+        @DisplayName("test should return ProductDto with new quantity")
+        void testUpdateShouldReturnProductDtoWithNewQuantity() {
+            Product mockedProduct = getMockedProduct();
+            ProductDto expectedValue = productMapper.toProductDto(mockedProduct);
 
-        assertThat(actualMessage).isEqualTo(expectedMessage);
-    }
+            doReturn(Optional.of(mockedProduct))
+                    .when(productRepository)
+                    .findById(ID);
 
-    @Test
-    @DisplayName("test findById method should return expected ProductDto")
-    void testFindByIdShouldReturnExpectedProductDto() {
-        Product mockedProduct = getMockedProduct();
-        ProductDto expectedValue = productMapper.toProductDto(mockedProduct);
+            doReturn(mockedProduct)
+                    .when(productRepository)
+                    .save(mockedProduct);
 
-        doReturn(Optional.of(mockedProduct))
-                .when(productRepository)
-                .findById(ID);
+            ProductDto actualValue = productService.update(ID, NEW_QUANTITY);
 
-        ProductDto actualValue = productService.findById(ID);
+            assertThat(actualValue.id()).isEqualTo(expectedValue.id());
+            assertThat(actualValue.quantity()).isNotEqualTo(expectedValue.quantity());
+        }
 
-        assertThat(actualValue).isEqualTo(expectedValue);
-    }
+        @Test
+        @DisplayName("test should return same ProductDto without update")
+        void testUpdateShouldReturnProductDtoWithoutUpdate() {
+            Product mockedProduct = getMockedProduct();
+            ProductDto expectedValue = productMapper.toProductDto(mockedProduct);
 
-    @Test
-    @DisplayName("test save method should return expected ProductDto")
-    void testSaveShouldReturnExpectedProductDto() {
-        Product mockedProduct = getMockedProduct();
-        ProductDto expectedValue = productMapper.toProductDto(mockedProduct);
+            doReturn(Optional.of(mockedProduct))
+                    .when(productRepository)
+                    .findById(ID);
 
-        doAnswer(invocationOnMock -> invocationOnMock.getArgument(0))
-                .when(productRepository)
-                .save(any(Product.class));
+            ProductDto actualValue = productService.update(ID, QUANTITY);
 
-        ProductDto actualValue = productService.save(productMapper.toProductDto(getMockedProduct()));
+            assertThat(actualValue).isEqualTo(expectedValue);
+        }
 
-        assertThat(actualValue).isEqualTo(expectedValue);
-    }
-
-    @Test
-    @DisplayName("test update method should return ProductDto with new quantity")
-    void testUpdateShouldReturnProductDtoWithNewQuantity() {
-        Product mockedProduct = getMockedProduct();
-        ProductDto expectedValue = productMapper.toProductDto(mockedProduct);
-
-        doReturn(Optional.of(mockedProduct))
-                .when(productRepository)
-                .findById(ID);
-
-        doReturn(mockedProduct)
-                .when(productRepository)
-                .save(mockedProduct);
-
-        ProductDto actualValue = productService.update(ID, NEW_QUANTITY);
-
-        assertThat(actualValue.id()).isEqualTo(expectedValue.id());
-        assertThat(actualValue.quantity()).isNotEqualTo(expectedValue.quantity());
-    }
-
-    @Test
-    @DisplayName("test update method should return same ProductDto without update")
-    void testUpdateShouldReturnProductDtoWithoutUpdate() {
-        Product mockedProduct = getMockedProduct();
-        ProductDto expectedValue = productMapper.toProductDto(mockedProduct);
-
-        doReturn(Optional.of(mockedProduct))
-                .when(productRepository)
-                .findById(ID);
-
-        ProductDto actualValue = productService.update(ID, QUANTITY);
-
-        assertThat(actualValue).isEqualTo(expectedValue);
     }
 
     private Product getMockedProduct() {
