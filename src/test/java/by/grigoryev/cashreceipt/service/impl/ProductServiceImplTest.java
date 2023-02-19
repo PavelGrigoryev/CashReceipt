@@ -59,8 +59,9 @@ class ProductServiceImplTest {
     @DisplayName("test findAll method should return sorted by id List of ProductDto")
     void testFindAllShouldReturnSortedByIdListOfProductDto() {
         List<Product> mockedProducts = getMockedProducts();
-        List<ProductDto> expectedValues = productMapper.toProductDtoList(mockedProducts)
+        List<ProductDto> expectedValues = mockedProducts
                 .stream()
+                .map(productMapper::toProductDto)
                 .sorted(Comparator.comparing(ProductDto::id))
                 .toList();
 
