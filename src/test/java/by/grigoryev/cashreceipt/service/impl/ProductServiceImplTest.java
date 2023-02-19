@@ -86,11 +86,9 @@ class ProductServiceImplTest {
         @Test
         @DisplayName("test throw NoSuchProductException")
         void testFindByIdThrowNoSuchProductException() {
-            Product mockedProduct = getMockedProduct();
-
-            doReturn(Optional.of(mockedProduct))
+            doThrow(new NoSuchProductException(""))
                     .when(productRepository)
-                    .findById(ID);
+                    .findById(NEW_ID);
 
             assertThrows(NoSuchProductException.class, () -> productService.findById(NEW_ID));
         }

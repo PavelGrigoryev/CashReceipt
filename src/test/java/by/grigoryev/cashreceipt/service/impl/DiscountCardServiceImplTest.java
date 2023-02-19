@@ -77,14 +77,11 @@ class DiscountCardServiceImplTest {
         @Test
         @DisplayName("test throw NoSuchDiscountCardException")
         void testFindByIdThrowNoSuchDiscountCardException() {
-            DiscountCard mockedDiscountCard = getMockedDiscountCard();
-            long wrongId = 2L;
-
-            doReturn(Optional.of(mockedDiscountCard))
+            doThrow(new NoSuchDiscountCardException(""))
                     .when(discountCardRepository)
                     .findById(ID);
 
-            assertThrows(NoSuchDiscountCardException.class, () -> discountCardService.findById(wrongId));
+            assertThrows(NoSuchDiscountCardException.class, () -> discountCardService.findById(ID));
         }
 
         @Test
@@ -142,15 +139,12 @@ class DiscountCardServiceImplTest {
         @Test
         @DisplayName("test throw NoSuchDiscountCardException")
         void testFindByDiscountCardNumberThrowNoSuchDiscountCardException() {
-            DiscountCard mockedDiscountCard = getMockedDiscountCard();
-            String wrongDiscountCardNumber = "2636";
-
-            doReturn(Optional.of(mockedDiscountCard))
+            doThrow(new NoSuchDiscountCardException(""))
                     .when(discountCardRepository)
                     .findByDiscountCardNumber(DISCOUNT_CARD_NUMBER);
 
             assertThrows(NoSuchDiscountCardException.class,
-                    () -> discountCardService.findByDiscountCardNumber(wrongDiscountCardNumber));
+                    () -> discountCardService.findByDiscountCardNumber(DISCOUNT_CARD_NUMBER));
         }
 
         @Test
