@@ -96,7 +96,8 @@ class DiscountCardServiceImplTest {
         DiscountCardDto expectedValue = discountCardMapper.toDiscountCardDto(mockedDiscountCard);
 
         doReturn(Optional.of(mockedDiscountCard))
-                .when(discountCardRepository).findById(ID);
+                .when(discountCardRepository)
+                .findById(ID);
 
         DiscountCardDto actualValue = discountCardService.findById(ID);
 
