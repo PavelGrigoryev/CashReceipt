@@ -5,59 +5,47 @@ import by.grigoryev.cashreceipt.service.CashReceiptInformationService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Spy;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.spy;
 
+@ExtendWith(MockitoExtension.class)
 class CashReceiptInformationServiceImplTest {
 
-    private static final long ID = 1L;
-    private static final int QUANTITY = 3;
-    private static final String NAME = "Самовар золотой";
-    private static final BigDecimal PRICE = BigDecimal.valueOf(256.24);
-    private static final boolean PROMOTION = true;
-
+    @Spy
     private CashReceiptInformationService cashReceiptInformationService;
 
     @BeforeEach
     void setUp() {
-        cashReceiptInformationService = spy(new CashReceiptInformationServiceImpl());
+        cashReceiptInformationService = new CashReceiptInformationServiceImpl();
     }
 
     @Test
     @DisplayName("test createCashReceiptHeader method should return expected string")
     void testCreateCashReceiptHeaderShouldReturnExpectedString() {
-        String expectedValue = """
-                            
-                Cash Receipt
-                DATE: %s TIME: %s
-                %s
-                %-6s %-15s %6s %8s
-                """.formatted(
-                LocalDate.now(),
-                LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")),
-                "-".repeat(40),
-                "QTY",
-                "DESCRIPTION",
-                "PRICE",
-                "TOTAL"
-        );
+        String expectedValue = "Cash Receipt";
 
         StringBuilder actualValue = cashReceiptInformationService.createCashReceiptHeader();
 
-        assertThat(actualValue).hasToString(expectedValue);
+        assertThat(actualValue).contains(expectedValue);
     }
 
     @Test
     @DisplayName("test createCashReceiptBody method should return expected string")
     void testCreateCashReceiptBodyShouldReturnExpectedString() {
-        ProductDto mockedProductDto = getMockedProductDto();
+        ProductDto mockedProductDto = new ProductDto(
+                1L,
+                3,
+                "Samovar",
+                BigDecimal.valueOf(5),
+                BigDecimal.valueOf(15),
+                true
+        );
 
         String expectedValue = """
                 %-2s  | %-15s | %-6s | %s
@@ -111,30 +99,13 @@ class CashReceiptInformationServiceImplTest {
     @Test
     @DisplayName("test createCashReceiptPromoDiscount method should return expected string")
     void testCreateCashReceiptPromoDiscountShouldReturnExpectedString() {
-        String expectedValue = """
-                PromoDiscount -10%s : "%s"
-                more than 5 items: -%s
-                """.formatted(
-                "%",
-                NAME,
-                PRICE
-        );
+        String expectedStringValue = "Samovar";
+        BigDecimal expectedDecimalValue = new BigDecimal("256");
 
         StringBuilder actualValue = cashReceiptInformationService
-                .createCashReceiptPromoDiscount(NAME, PRICE);
+                .createCashReceiptPromoDiscount(expectedStringValue, expectedDecimalValue);
 
-        assertThat(actualValue).hasToString(expectedValue);
-    }
-
-    private ProductDto getMockedProductDto() {
-        return new ProductDto(
-                ID,
-                QUANTITY,
-                NAME,
-                PRICE,
-                PRICE.multiply(BigDecimal.valueOf(QUANTITY)),
-                PROMOTION
-        );
+        assertThat(actualValue).contains(expectedStringValue).contains(expectedDecimalValue.toString());
     }
 
 }

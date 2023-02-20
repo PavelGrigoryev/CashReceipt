@@ -1,6 +1,7 @@
-package by.grigoryev.cashreceipt.util;
+package by.grigoryev.cashreceipt.util.testbuilder;
 
 import by.grigoryev.cashreceipt.model.Product;
+import by.grigoryev.cashreceipt.util.TestBuilder;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.With;

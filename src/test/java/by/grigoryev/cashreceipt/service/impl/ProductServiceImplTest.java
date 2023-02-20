@@ -6,12 +6,16 @@ import by.grigoryev.cashreceipt.mapper.ProductMapper;
 import by.grigoryev.cashreceipt.model.Product;
 import by.grigoryev.cashreceipt.repository.ProductRepository;
 import by.grigoryev.cashreceipt.service.ProductService;
-import by.grigoryev.cashreceipt.util.ProductTestBuilder;
+import by.grigoryev.cashreceipt.util.testbuilder.ProductTestBuilder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mapstruct.factory.Mappers;
+import org.mockito.Mock;
+import org.mockito.Spy;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Comparator;
 import java.util.List;
@@ -21,17 +25,19 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
+@ExtendWith(MockitoExtension.class)
 class ProductServiceImplTest {
 
+    @Spy
     private ProductService productService;
+    @Mock
     private ProductRepository productRepository;
     private final ProductMapper productMapper = Mappers.getMapper(ProductMapper.class);
     private final ProductTestBuilder testBuilder = ProductTestBuilder.aProduct();
 
     @BeforeEach
     void setUp() {
-        productRepository = mock(ProductRepository.class);
-        productService = spy(new ProductServiceImpl(productRepository));
+        productService = new ProductServiceImpl(productRepository);
     }
 
     @Nested

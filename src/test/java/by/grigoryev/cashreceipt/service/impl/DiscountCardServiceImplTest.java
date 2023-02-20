@@ -6,12 +6,16 @@ import by.grigoryev.cashreceipt.mapper.DiscountCardMapper;
 import by.grigoryev.cashreceipt.model.DiscountCard;
 import by.grigoryev.cashreceipt.repository.DiscountCardRepository;
 import by.grigoryev.cashreceipt.service.DiscountCardService;
-import by.grigoryev.cashreceipt.util.DiscountCardTestBuilder;
+import by.grigoryev.cashreceipt.util.testbuilder.DiscountCardTestBuilder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mapstruct.factory.Mappers;
+import org.mockito.Mock;
+import org.mockito.Spy;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
 import java.util.Optional;
@@ -20,17 +24,19 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
+@ExtendWith(MockitoExtension.class)
 class DiscountCardServiceImplTest {
 
+    @Spy
     private DiscountCardService discountCardService;
+    @Mock
     private DiscountCardRepository discountCardRepository;
     private final DiscountCardMapper discountCardMapper = Mappers.getMapper(DiscountCardMapper.class);
     private final DiscountCardTestBuilder testBuilder = DiscountCardTestBuilder.aDiscountCard();
 
     @BeforeEach
     void setUp() {
-        discountCardRepository = mock(DiscountCardRepository.class);
-        discountCardService = spy(new DiscountCardServiceImpl(discountCardRepository));
+        discountCardService = new DiscountCardServiceImpl(discountCardRepository);
     }
 
     @Nested
