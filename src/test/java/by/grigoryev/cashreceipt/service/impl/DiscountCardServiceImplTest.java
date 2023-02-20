@@ -6,13 +6,13 @@ import by.grigoryev.cashreceipt.mapper.DiscountCardMapper;
 import by.grigoryev.cashreceipt.model.DiscountCard;
 import by.grigoryev.cashreceipt.repository.DiscountCardRepository;
 import by.grigoryev.cashreceipt.service.DiscountCardService;
+import by.grigoryev.cashreceipt.util.DiscountCardTestBuilder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
 
-import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
@@ -22,13 +22,10 @@ import static org.mockito.Mockito.*;
 
 class DiscountCardServiceImplTest {
 
-    private static final Long ID = 1L;
-    private static final String DISCOUNT_CARD_NUMBER = "1234";
-    private static final BigDecimal DISCOUNT_PERCENTAGE = BigDecimal.valueOf(3);
-
     private DiscountCardService discountCardService;
     private DiscountCardRepository discountCardRepository;
     private final DiscountCardMapper discountCardMapper = Mappers.getMapper(DiscountCardMapper.class);
+    private final DiscountCardTestBuilder testBuilder = DiscountCardTestBuilder.aDiscountCard();
 
     @BeforeEach
     void setUp() {
@@ -42,7 +39,7 @@ class DiscountCardServiceImplTest {
         @Test
         @DisplayName("test should return List of size 1")
         void testFindAllShouldReturnListOfSizeOne() {
-            DiscountCard mockedDiscountCard = getMockedDiscountCard();
+            DiscountCard mockedDiscountCard = testBuilder.build();
             int expectedSize = 1;
 
             doReturn(List.of(mockedDiscountCard))
@@ -57,7 +54,7 @@ class DiscountCardServiceImplTest {
         @Test
         @DisplayName("test should return expected List of DiscountCardDto")
         void testFindAllShouldReturnListOfDiscountCardDto() {
-            DiscountCard mockedDiscountCard = getMockedDiscountCard();
+            DiscountCard mockedDiscountCard = testBuilder.build();
             List<DiscountCardDto> expectedValues = discountCardMapper.toDiscountCardDtoList(List.of(mockedDiscountCard));
 
             doReturn(List.of(mockedDiscountCard))
@@ -77,19 +74,22 @@ class DiscountCardServiceImplTest {
         @Test
         @DisplayName("test throw NoSuchDiscountCardException")
         void testFindByIdThrowNoSuchDiscountCardException() {
+            long id = 1;
+
             doThrow(new NoSuchDiscountCardException(""))
                     .when(discountCardRepository)
-                    .findById(ID);
+                    .findById(id);
 
-            assertThrows(NoSuchDiscountCardException.class, () -> discountCardService.findById(ID));
+            assertThrows(NoSuchDiscountCardException.class, () -> discountCardService.findById(id));
         }
 
         @Test
         @DisplayName("test throw NoSuchDiscountCardException with expected message")
         void testFindByIdThrowNoSuchDiscountCardExceptionWithExpectedMessage() {
-            String expectedMessage = "DiscountCard with ID " + ID + " does not exist";
+            long id = 1;
+            String expectedMessage = "DiscountCard with ID " + id + " does not exist";
 
-            Exception exception = assertThrows(NoSuchDiscountCardException.class, () -> discountCardService.findById(ID));
+            Exception exception = assertThrows(NoSuchDiscountCardException.class, () -> discountCardService.findById(id));
             String actualMessage = exception.getMessage();
 
             assertThat(actualMessage).isEqualTo(expectedMessage);
@@ -98,14 +98,15 @@ class DiscountCardServiceImplTest {
         @Test
         @DisplayName("test should return expected DiscountCardDto")
         void testFindByIdShouldReturnExpectedDiscountCardDto() {
-            DiscountCard mockedDiscountCard = getMockedDiscountCard();
+            DiscountCard mockedDiscountCard = testBuilder.build();
+            long id = mockedDiscountCard.getId();
             DiscountCardDto expectedValue = discountCardMapper.toDiscountCardDto(mockedDiscountCard);
 
             doReturn(Optional.of(mockedDiscountCard))
                     .when(discountCardRepository)
-                    .findById(ID);
+                    .findById(id);
 
-            DiscountCardDto actualValue = discountCardService.findById(ID);
+            DiscountCardDto actualValue = discountCardService.findById(id);
 
             assertThat(actualValue).isEqualTo(expectedValue);
         }
@@ -118,7 +119,7 @@ class DiscountCardServiceImplTest {
         @Test
         @DisplayName("test should return expected DiscountCardDto")
         void testSaveShouldReturnExpectedDiscountCardDto() {
-            DiscountCard mockedDiscountCard = getMockedDiscountCard();
+            DiscountCard mockedDiscountCard = testBuilder.build();
             DiscountCardDto expectedValue = discountCardMapper.toDiscountCardDto(mockedDiscountCard);
 
             doAnswer(invocationOnMock -> invocationOnMock.getArgument(0))
@@ -126,7 +127,7 @@ class DiscountCardServiceImplTest {
                     .save(any(DiscountCard.class));
 
             DiscountCardDto actualValue = discountCardService
-                    .save(discountCardMapper.toDiscountCardDto(getMockedDiscountCard()));
+                    .save(discountCardMapper.toDiscountCardDto(testBuilder.build()));
 
             assertThat(actualValue).isEqualTo(expectedValue);
         }
@@ -139,21 +140,24 @@ class DiscountCardServiceImplTest {
         @Test
         @DisplayName("test throw NoSuchDiscountCardException")
         void testFindByDiscountCardNumberThrowNoSuchDiscountCardException() {
+            String discountCardNumber = "1234";
+
             doThrow(new NoSuchDiscountCardException(""))
                     .when(discountCardRepository)
-                    .findByDiscountCardNumber(DISCOUNT_CARD_NUMBER);
+                    .findByDiscountCardNumber(discountCardNumber);
 
             assertThrows(NoSuchDiscountCardException.class,
-                    () -> discountCardService.findByDiscountCardNumber(DISCOUNT_CARD_NUMBER));
+                    () -> discountCardService.findByDiscountCardNumber(discountCardNumber));
         }
 
         @Test
         @DisplayName("test throw NoSuchDiscountCardException with expected message")
         void testFindByDiscountCardNumberThrowNoSuchDiscountCardExceptionWithExpectedMessage() {
-            String expectedMessage = "DiscountCard with card number " + DISCOUNT_CARD_NUMBER + " does not exist";
+            String discountCardNumber = "1234";
+            String expectedMessage = "DiscountCard with card number " + discountCardNumber + " does not exist";
 
             Exception exception = assertThrows(NoSuchDiscountCardException.class,
-                    () -> discountCardService.findByDiscountCardNumber(DISCOUNT_CARD_NUMBER));
+                    () -> discountCardService.findByDiscountCardNumber(discountCardNumber));
 
             String actualMessage = exception.getMessage();
 
@@ -163,13 +167,14 @@ class DiscountCardServiceImplTest {
         @Test
         @DisplayName("test should return expected DiscountCardDto")
         void testFindByDiscountCardNumberShouldReturnExpectedDiscountCardDto() {
-            DiscountCard mockedDiscountCard = getMockedDiscountCard();
+            DiscountCard mockedDiscountCard = testBuilder.build();
+            String discountCardNumber = mockedDiscountCard.getDiscountCardNumber();
             DiscountCardDto expectedValue = discountCardMapper.toDiscountCardDto(mockedDiscountCard);
 
             doReturn(Optional.of(mockedDiscountCard))
-                    .when(discountCardRepository).findByDiscountCardNumber(DISCOUNT_CARD_NUMBER);
+                    .when(discountCardRepository).findByDiscountCardNumber(discountCardNumber);
 
-            DiscountCardDto actualValue = discountCardService.findByDiscountCardNumber(DISCOUNT_CARD_NUMBER);
+            DiscountCardDto actualValue = discountCardService.findByDiscountCardNumber(discountCardNumber);
 
             assertThat(actualValue).isEqualTo(expectedValue);
         }
@@ -182,30 +187,23 @@ class DiscountCardServiceImplTest {
         @Test
         @DisplayName("test should invoke method 1 time")
         void testDeleteById() {
-            DiscountCard mockedDiscountCard = getMockedDiscountCard();
+            DiscountCard mockedDiscountCard = testBuilder.build();
+            long id = mockedDiscountCard.getId();
 
             doReturn(Optional.of(mockedDiscountCard))
                     .when(discountCardRepository)
-                    .findById(ID);
+                    .findById(id);
 
             doNothing()
                     .when(discountCardRepository)
-                    .deleteById(ID);
+                    .deleteById(id);
 
-            discountCardService.deleteById(ID);
+            discountCardService.deleteById(id);
 
             verify(discountCardRepository, times(1))
-                    .deleteById(ID);
+                    .deleteById(id);
         }
 
-    }
-
-    private DiscountCard getMockedDiscountCard() {
-        return DiscountCard.builder()
-                .id(ID)
-                .discountCardNumber(DISCOUNT_CARD_NUMBER)
-                .discountPercentage(DISCOUNT_PERCENTAGE)
-                .build();
     }
 
 }
