@@ -31,6 +31,7 @@ dependencies {
     annotationProcessor 'org.projectlombok:lombok-mapstruct-binding:0.2.0'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testAnnotationProcessor 'org.mapstruct:mapstruct-processor:1.5.3.Final'
+    implementation 'com.github.marschall:memoryfilesystem:2.5.0'
 }
 
 tasks.named('test') {

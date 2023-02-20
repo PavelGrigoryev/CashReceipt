@@ -8,26 +8,28 @@ import by.grigoryev.cashreceipt.repository.ProductRepository;
 import by.grigoryev.cashreceipt.service.ProductService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
 
 import java.math.BigDecimal;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 class ProductServiceImplTest {
 
-    public static final long ID = 1L;
-    public static final int QUANTITY = 3;
-    public static final String NAME = "Самовар золотой";
-    public static final BigDecimal PRICE = BigDecimal.valueOf(256.24);
-    public static final boolean PROMOTION = true;
-    public static final int NEW_QUANTITY = 2;
-    public static final long NEW_ID = 2L;
+    private static final Long ID = 1L;
+    private static final Integer QUANTITY = 3;
+    private static final String NAME = "Самовар золотой";
+    private static final BigDecimal PRICE = BigDecimal.valueOf(256.24);
+    private static final Boolean PROMOTION = true;
+    private static final Long NEW_ID = 2L;
+    private static final Integer NEW_QUANTITY = 2;
 
     private ProductService productService;
     private ProductRepository productRepository;
@@ -39,84 +41,144 @@ class ProductServiceImplTest {
         productService = spy(new ProductServiceImpl(productRepository));
     }
 
-    @Test
-    @DisplayName("testing findAll method")
-    void findAll() {
-        Product product = getMockedProduct();
+    @Nested
+    class FindAllTest {
 
-        doReturn(List.of(product)).when(productRepository).findAll();
-        List<Product> products = productService.findAll()
-                .stream()
-                .map(productMapper::fromProductDto)
-                .toList();
-        assertEquals(1, products.size());
-        assertEquals(product, products.get(0));
+        @Test
+        @DisplayName("test should return List of size 1")
+        void testFindAllShouldReturnListOfSizeOne() {
+            Product mockedProduct = getMockedProduct();
+            int expectedSize = 1;
+
+            doReturn(List.of(mockedProduct))
+                    .when(productRepository)
+                    .findAll();
+
+            List<ProductDto> actualValues = productService.findAll();
+
+            assertThat(actualValues).hasSize(expectedSize);
+        }
+
+        @Test
+        @DisplayName("test should return sorted by id List of ProductDto")
+        void testFindAllShouldReturnSortedByIdListOfProductDto() {
+            List<Product> mockedProducts = getMockedProducts();
+            List<ProductDto> expectedValues = mockedProducts
+                    .stream()
+                    .map(productMapper::toProductDto)
+                    .sorted(Comparator.comparing(ProductDto::id))
+                    .toList();
+
+            doReturn(mockedProducts)
+                    .when(productRepository)
+                    .findAll();
+
+            List<ProductDto> actualValues = productService.findAll();
+
+            assertThat(actualValues).isEqualTo(expectedValues);
+        }
+
     }
 
-    @Test
-    @DisplayName("testing if exception throws when Product is not found by id")
-    void findByIdThrowsException() {
-        doThrow(new NoSuchProductException("Product with ID " + ID + " does not exist"))
-                .when(productRepository).findById(ID);
+    @Nested
+    class FindByIdTest {
 
-        Exception exception = assertThrows(NoSuchProductException.class, () -> productService.findById(ID));
+        @Test
+        @DisplayName("test throw NoSuchProductException")
+        void testFindByIdThrowNoSuchProductException() {
+            doThrow(new NoSuchProductException(""))
+                    .when(productRepository)
+                    .findById(NEW_ID);
 
-        String expectedMessage = "Product with ID " + ID + " does not exist";
-        assertEquals(expectedMessage, exception.getMessage());
+            assertThrows(NoSuchProductException.class, () -> productService.findById(NEW_ID));
+        }
+
+        @Test
+        @DisplayName("test throw NoSuchProductException with expected message")
+        void testFindByIdThrowNoSuchProductExceptionWithExpectedMessage() {
+            String expectedMessage = "Product with ID " + ID + " does not exist";
+
+            Exception exception = assertThrows(NoSuchProductException.class, () -> productService.findById(ID));
+            String actualMessage = exception.getMessage();
+
+            assertThat(actualMessage).isEqualTo(expectedMessage);
+        }
+
+        @Test
+        @DisplayName("test should return expected ProductDto")
+        void testFindByIdShouldReturnExpectedProductDto() {
+            Product mockedProduct = getMockedProduct();
+            ProductDto expectedValue = productMapper.toProductDto(mockedProduct);
+
+            doReturn(Optional.of(mockedProduct))
+                    .when(productRepository)
+                    .findById(ID);
+
+            ProductDto actualValue = productService.findById(ID);
+
+            assertThat(actualValue).isEqualTo(expectedValue);
+        }
+
     }
 
-    @Test
-    @DisplayName("testing if Product returns when it is found by id")
-    void findByIdReturnsProduct() {
-        Product mockedProduct = getMockedProduct();
-        doReturn(Optional.of(mockedProduct))
-                .when(productRepository).findById(ID);
+    @Nested
+    class SaveTest {
 
-        ProductDto productDto = productService.findById(ID);
-        Product product = productMapper.fromProductDto(productDto);
-
-        assertEquals(mockedProduct, product);
-    }
-
-    @Test
-    @DisplayName("testing save method")
-    void save() {
-        Product mockedProduct = getMockedProduct();
-        doAnswer(invocationOnMock -> invocationOnMock.getArgument(0))
-                .when(productRepository)
-                .save(any(Product.class));
-
-        ProductDto productDto = productService.save(productMapper.toProductDto(getMockedProduct()));
-        Product product = productMapper.fromProductDto(productDto);
-
-        assertEquals(mockedProduct, product);
-    }
-
-    @Test
-    @DisplayName("testing update method")
-    void update() {
-        Product mockedProduct = getMockedProduct();
-        doReturn(Optional.of(mockedProduct))
-                .when(productRepository).findById(ID);
-
-        if (!(NEW_QUANTITY == (mockedProduct.getQuantity()))) {
-            mockedProduct.setId(NEW_ID);
-            mockedProduct.setQuantity(NEW_QUANTITY);
-            mockedProduct.setTotal(mockedProduct.getPrice().multiply(BigDecimal.valueOf(NEW_QUANTITY)));
+        @Test
+        @DisplayName("test should return expected ProductDto")
+        void testSaveShouldReturnExpectedProductDto() {
+            Product mockedProduct = getMockedProduct();
+            ProductDto expectedValue = productMapper.toProductDto(mockedProduct);
 
             doAnswer(invocationOnMock -> invocationOnMock.getArgument(0))
                     .when(productRepository)
                     .save(any(Product.class));
 
-            Product product = productRepository.save(mockedProduct);
+            ProductDto actualValue = productService.save(productMapper.toProductDto(getMockedProduct()));
 
-            assertEquals(mockedProduct, product);
+            assertThat(actualValue).isEqualTo(expectedValue);
         }
 
-        ProductDto productDto = productService.update(ID, QUANTITY);
-        Product product = productMapper.fromProductDto(productDto);
+    }
 
-        assertEquals(mockedProduct, product);
+    @Nested
+    class UpdateTest {
+
+        @Test
+        @DisplayName("test should return ProductDto with new quantity")
+        void testUpdateShouldReturnProductDtoWithNewQuantity() {
+            Product mockedProduct = getMockedProduct();
+            ProductDto expectedValue = productMapper.toProductDto(mockedProduct);
+
+            doReturn(Optional.of(mockedProduct))
+                    .when(productRepository)
+                    .findById(ID);
+
+            doReturn(mockedProduct)
+                    .when(productRepository)
+                    .save(mockedProduct);
+
+            ProductDto actualValue = productService.update(ID, NEW_QUANTITY);
+
+            assertThat(actualValue.id()).isEqualTo(expectedValue.id());
+            assertThat(actualValue.quantity()).isNotEqualTo(expectedValue.quantity());
+        }
+
+        @Test
+        @DisplayName("test should return same ProductDto without update")
+        void testUpdateShouldReturnProductDtoWithoutUpdate() {
+            Product mockedProduct = getMockedProduct();
+            ProductDto expectedValue = productMapper.toProductDto(mockedProduct);
+
+            doReturn(Optional.of(mockedProduct))
+                    .when(productRepository)
+                    .findById(ID);
+
+            ProductDto actualValue = productService.update(ID, QUANTITY);
+
+            assertThat(actualValue).isEqualTo(expectedValue);
+        }
+
     }
 
     private Product getMockedProduct() {
@@ -128,6 +190,27 @@ class ProductServiceImplTest {
                 .total(PRICE.multiply(BigDecimal.valueOf(QUANTITY)))
                 .promotion(PROMOTION)
                 .build();
+    }
+
+    private List<Product> getMockedProducts() {
+        return List.of(
+                Product.builder()
+                        .id(NEW_ID)
+                        .quantity(NEW_QUANTITY)
+                        .name(NAME)
+                        .price(PRICE)
+                        .total(PRICE.multiply(BigDecimal.valueOf(QUANTITY)))
+                        .promotion(PROMOTION)
+                        .build(),
+                Product.builder()
+                        .id(ID)
+                        .quantity(QUANTITY)
+                        .name(NAME)
+                        .price(PRICE)
+                        .total(PRICE.multiply(BigDecimal.valueOf(QUANTITY)))
+                        .promotion(PROMOTION)
+                        .build()
+        );
     }
 
 }

@@ -1,17 +1,17 @@
 package by.grigoryev.cashreceipt.service.impl;
 
 import by.grigoryev.cashreceipt.service.UploadFileService;
+import com.github.marschall.memoryfilesystem.MemoryFileSystemBuilder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
+import java.nio.file.FileSystem;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.spy;
 
 class UploadFileServiceImplTest {
@@ -19,7 +19,7 @@ class UploadFileServiceImplTest {
     private UploadFileService uploadFileService;
 
     public static final String CASH_RECEIPT = """
-            
+                        
             Cash Receipt
             DATE: 2022-12-21 TIME: 15:23:48
             ----------------------------------------
@@ -43,15 +43,19 @@ class UploadFileServiceImplTest {
     }
 
     @Test
-    @DisplayName("testing uploadFile method for the existence of the file")
-    void uploadFile() throws IOException {
-        Path absolutePath = Paths.get("CashReceipt1.txt").toAbsolutePath();
-        Path expectedValue = Files.write(absolutePath, CASH_RECEIPT.getBytes());
+    @DisplayName("test uploadFile method should save a file.txt")
+    void testUploadFileShouldSaveFile() throws IOException {
+        FileSystem fileSystem = MemoryFileSystemBuilder.newEmpty().build();
 
-        Path uploadFile = uploadFileService.uploadFile(CASH_RECEIPT);
+        Path path = fileSystem.getPath("CashReceipt1.txt");
+        Path expectedValue = Files.write(path, CASH_RECEIPT.getBytes());
 
-        assertTrue(Files.exists(expectedValue));
-        assertThat(Files.readString(expectedValue)).isEqualTo(Files.readString(uploadFile));
+        Path actualValue = uploadFileService.uploadFile(CASH_RECEIPT);
+
+        assertThat(Files.exists(expectedValue)).isTrue();
+        assertThat(Files.readString(expectedValue)).isEqualTo(Files.readString(actualValue));
+
+        fileSystem.close();
     }
 
 }

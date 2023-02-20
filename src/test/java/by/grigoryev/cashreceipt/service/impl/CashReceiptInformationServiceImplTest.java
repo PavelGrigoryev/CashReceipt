@@ -12,10 +12,16 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.spy;
 
 class CashReceiptInformationServiceImplTest {
+
+    private static final long ID = 1L;
+    private static final int QUANTITY = 3;
+    private static final String NAME = "Самовар золотой";
+    private static final BigDecimal PRICE = BigDecimal.valueOf(256.24);
+    private static final boolean PROMOTION = true;
 
     private CashReceiptInformationService cashReceiptInformationService;
 
@@ -25,8 +31,8 @@ class CashReceiptInformationServiceImplTest {
     }
 
     @Test
-    @DisplayName("testing createCashReceiptHeader method")
-    void createCashReceiptHeader() {
+    @DisplayName("test createCashReceiptHeader method should return expected string")
+    void testCreateCashReceiptHeaderShouldReturnExpectedString() {
         String expectedValue = """
                             
                 Cash Receipt
@@ -43,14 +49,14 @@ class CashReceiptInformationServiceImplTest {
                 "TOTAL"
         );
 
-        StringBuilder cashReceiptHeader = cashReceiptInformationService.createCashReceiptHeader();
+        StringBuilder actualValue = cashReceiptInformationService.createCashReceiptHeader();
 
-        assertEquals(expectedValue, cashReceiptHeader.toString());
+        assertThat(actualValue).hasToString(expectedValue);
     }
 
     @Test
-    @DisplayName("testing createCashReceiptBody method")
-    void createCashReceiptBody() {
+    @DisplayName("test createCashReceiptBody method should return expected string")
+    void testCreateCashReceiptBodyShouldReturnExpectedString() {
         ProductDto mockedProductDto = getMockedProductDto();
 
         String expectedValue = """
@@ -62,19 +68,19 @@ class CashReceiptInformationServiceImplTest {
                 mockedProductDto.total()
         );
 
-        StringBuilder cashReceiptBody = cashReceiptInformationService.createCashReceiptBody(mockedProductDto);
+        StringBuilder actualValue = cashReceiptInformationService.createCashReceiptBody(mockedProductDto);
 
-        assertEquals(expectedValue, cashReceiptBody.toString());
+        assertThat(actualValue).hasToString(expectedValue);
     }
 
     @Test
-    @DisplayName("testing createCashReceiptResults method")
-    void createCashReceiptResults() {
-        BigDecimal totalSum = new BigDecimal("165");
+    @DisplayName("test createCashReceiptResults method should return expected string")
+    void testCreateCashReceiptResultsShouldReturnExpectedString() {
+        BigDecimal totalSum = new BigDecimal("165.00");
         BigDecimal discountCardPercentage = new BigDecimal("3");
-        BigDecimal discount = new BigDecimal("10");
-        StringBuilder promoDiscBuilder = new StringBuilder("Hi");
-        BigDecimal totalSumWithDiscount = new BigDecimal("25");
+        BigDecimal discount = new BigDecimal("10.2500");
+        StringBuilder promoDiscBuilder = new StringBuilder("PromoDiscount -10% : \"Woolen gloves\"");
+        BigDecimal totalSumWithDiscount = new BigDecimal("143.137500");
 
         String expectedValue = """
                 %s
@@ -90,42 +96,44 @@ class CashReceiptInformationServiceImplTest {
                 totalSumWithDiscount.setScale(2, RoundingMode.UP).stripTrailingZeros()
         );
 
-        StringBuilder cashReceiptResults = cashReceiptInformationService
-                .createCashReceiptResults(totalSum, discountCardPercentage, discount,
-                        promoDiscBuilder, totalSumWithDiscount);
+        StringBuilder actualValue = cashReceiptInformationService
+                .createCashReceiptResults(
+                        totalSum,
+                        discountCardPercentage,
+                        discount,
+                        promoDiscBuilder,
+                        totalSumWithDiscount
+                );
 
-        assertEquals(expectedValue, cashReceiptResults.toString());
+        assertThat(actualValue).hasToString(expectedValue);
     }
 
     @Test
-    @DisplayName("testing createCashReceiptPromoDiscount method")
-    void createCashReceiptPromoDiscount() {
-        String productName = getMockedProductDto().name();
-        BigDecimal promotionDiscount = getMockedProductDto().price();
-
+    @DisplayName("test createCashReceiptPromoDiscount method should return expected string")
+    void testCreateCashReceiptPromoDiscountShouldReturnExpectedString() {
         String expectedValue = """
                 PromoDiscount -10%s : "%s"
                 more than 5 items: -%s
                 """.formatted(
                 "%",
-                productName,
-                promotionDiscount
+                NAME,
+                PRICE
         );
 
-        StringBuilder cashReceiptPromoDiscount = cashReceiptInformationService
-                .createCashReceiptPromoDiscount(productName, promotionDiscount);
+        StringBuilder actualValue = cashReceiptInformationService
+                .createCashReceiptPromoDiscount(NAME, PRICE);
 
-        assertEquals(expectedValue, cashReceiptPromoDiscount.toString());
+        assertThat(actualValue).hasToString(expectedValue);
     }
 
     private ProductDto getMockedProductDto() {
         return new ProductDto(
-                1L,
-                3,
-                "Самовар золотой",
-                BigDecimal.valueOf(256.24),
-                BigDecimal.valueOf(256.24).multiply(BigDecimal.valueOf(3)),
-                true
+                ID,
+                QUANTITY,
+                NAME,
+                PRICE,
+                PRICE.multiply(BigDecimal.valueOf(QUANTITY)),
+                PROMOTION
         );
     }
 
