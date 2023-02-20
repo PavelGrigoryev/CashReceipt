@@ -181,6 +181,30 @@ class ProductServiceImplTest {
 
     }
 
+    @Nested
+    class DeleteTest {
+
+        @Test
+        @DisplayName("test should invoke method 1 time")
+        void testDeleteById() {
+            Product mockedProduct = getMockedProduct();
+
+            doReturn(Optional.of(mockedProduct))
+                    .when(productRepository)
+                    .findById(ID);
+
+            doNothing()
+                    .when(productRepository)
+                    .deleteById(ID);
+
+            productService.deleteById(ID);
+
+            verify(productRepository, times(1))
+                    .deleteById(ID);
+        }
+
+    }
+
     private Product getMockedProduct() {
         return Product.builder()
                 .id(ID)

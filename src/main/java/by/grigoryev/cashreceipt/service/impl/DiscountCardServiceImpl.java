@@ -3,6 +3,7 @@ package by.grigoryev.cashreceipt.service.impl;
 import by.grigoryev.cashreceipt.dto.DiscountCardDto;
 import by.grigoryev.cashreceipt.exception.NoSuchDiscountCardException;
 import by.grigoryev.cashreceipt.mapper.DiscountCardMapper;
+import by.grigoryev.cashreceipt.model.DiscountCard;
 import by.grigoryev.cashreceipt.repository.DiscountCardRepository;
 import by.grigoryev.cashreceipt.service.DiscountCardService;
 import lombok.RequiredArgsConstructor;
@@ -55,6 +56,14 @@ public class DiscountCardServiceImpl implements DiscountCardService {
         );
         log.info("findByDiscountCardNumber {}", discountCardDto);
         return discountCardDto;
+    }
+
+    @Override
+    public void deleteById(Long id) {
+        DiscountCard discountCard = discountCardRepository.findById(id)
+                .orElseThrow(() -> new NoSuchDiscountCardException("No discount card with ID " + id + " to delete"));
+        log.info("deleteById {}", discountCard);
+        discountCardRepository.deleteById(id);
     }
 
 }

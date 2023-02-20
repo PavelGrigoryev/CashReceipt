@@ -176,6 +176,30 @@ class DiscountCardServiceImplTest {
 
     }
 
+    @Nested
+    class DeleteTest {
+
+        @Test
+        @DisplayName("test should invoke method 1 time")
+        void testDeleteById() {
+            DiscountCard mockedDiscountCard = getMockedDiscountCard();
+
+            doReturn(Optional.of(mockedDiscountCard))
+                    .when(discountCardRepository)
+                    .findById(ID);
+
+            doNothing()
+                    .when(discountCardRepository)
+                    .deleteById(ID);
+
+            discountCardService.deleteById(ID);
+
+            verify(discountCardRepository, times(1))
+                    .deleteById(ID);
+        }
+
+    }
+
     private DiscountCard getMockedDiscountCard() {
         return DiscountCard.builder()
                 .id(ID)

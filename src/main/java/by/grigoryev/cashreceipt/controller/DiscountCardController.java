@@ -56,4 +56,14 @@ public class DiscountCardController {
         return ResponseEntity.status(HttpStatus.CREATED).body(discountCardService.save(discountCardDto));
     }
 
+    @Operation(
+            summary = "Delete discount card by {id}", tags = "DiscountCard",
+            parameters = @Parameter(name = "id", description = "Enter discount card id here", example = "1")
+    )
+    @DeleteMapping("{id}")
+    public ResponseEntity<String> deleteById(@PathVariable("id") Long id) {
+        discountCardService.deleteById(id);
+        return ResponseEntity.ok("The discount card with ID " + id + " has been deleted");
+    }
+
 }

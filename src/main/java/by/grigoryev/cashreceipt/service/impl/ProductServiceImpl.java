@@ -70,6 +70,14 @@ public class ProductServiceImpl implements ProductService {
 
     }
 
+    @Override
+    public void deleteById(Long id) {
+        Product product = productRepository.findById(id)
+                .orElseThrow(() -> new NoSuchProductException("No product with ID " + id + " to delete"));
+        log.info("deleteById {}", product);
+        productRepository.deleteById(id);
+    }
+
     private Product createProduct(Product product) {
         return Product.builder()
                 .id(product.getId())

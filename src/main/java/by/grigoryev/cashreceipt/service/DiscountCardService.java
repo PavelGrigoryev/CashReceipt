@@ -14,4 +14,6 @@ public interface DiscountCardService {
 
     DiscountCardDto findByDiscountCardNumber(String discountCardNumber);
 
+    void deleteById(Long id);
+
 }

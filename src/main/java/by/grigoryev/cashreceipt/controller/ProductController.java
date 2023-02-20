@@ -72,4 +72,14 @@ public class ProductController {
         return ResponseEntity.ok(productService.update(id, quantity));
     }
 
+    @Operation(
+            summary = "Delete product by {id}", tags = "Product",
+            parameters = @Parameter(name = "id", description = "Enter product id here", example = "1")
+    )
+    @DeleteMapping("{id}")
+    public ResponseEntity<String> deleteById(@PathVariable("id") Long id) {
+        productService.deleteById(id);
+        return ResponseEntity.ok("The product with ID " + id + " has been deleted");
+    }
+
 }
