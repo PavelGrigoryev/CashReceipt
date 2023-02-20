@@ -6,6 +6,7 @@ import by.grigoryev.cashreceipt.mapper.ProductMapper;
 import by.grigoryev.cashreceipt.model.Product;
 import by.grigoryev.cashreceipt.repository.ProductRepository;
 import by.grigoryev.cashreceipt.service.ProductService;
+import by.grigoryev.cashreceipt.util.ProductTestBuilder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -23,17 +24,10 @@ import static org.mockito.Mockito.*;
 
 class ProductServiceImplTest {
 
-    private static final Long ID = 1L;
-    private static final Integer QUANTITY = 3;
-    private static final String NAME = "Самовар золотой";
-    private static final BigDecimal PRICE = BigDecimal.valueOf(256.24);
-    private static final Boolean PROMOTION = true;
-    private static final Long NEW_ID = 2L;
-    private static final Integer NEW_QUANTITY = 2;
-
     private ProductService productService;
     private ProductRepository productRepository;
     private final ProductMapper productMapper = Mappers.getMapper(ProductMapper.class);
+    private final ProductTestBuilder productTestBuilder = ProductTestBuilder.aProduct();
 
     @BeforeEach
     void setUp() {
@@ -47,7 +41,9 @@ class ProductServiceImplTest {
         @Test
         @DisplayName("test should return List of size 1")
         void testFindAllShouldReturnListOfSizeOne() {
-            Product mockedProduct = getMockedProduct();
+            Product mockedProduct = productTestBuilder.build();
+            System.out.println(productTestBuilder.build());
+            System.out.println(productTestBuilder.withName("Apa").withPrice(BigDecimal.valueOf(1000)).build());
             int expectedSize = 1;
 
             doReturn(List.of(mockedProduct))
@@ -62,7 +58,11 @@ class ProductServiceImplTest {
         @Test
         @DisplayName("test should return sorted by id List of ProductDto")
         void testFindAllShouldReturnSortedByIdListOfProductDto() {
-            List<Product> mockedProducts = getMockedProducts();
+            List<Product> mockedProducts = List.of(
+                    productTestBuilder.withId(2L).build(),
+                    productTestBuilder.withId(3L).build(),
+                    productTestBuilder.build()
+            );
             List<ProductDto> expectedValues = mockedProducts
                     .stream()
                     .map(productMapper::toProductDto)
@@ -86,19 +86,22 @@ class ProductServiceImplTest {
         @Test
         @DisplayName("test throw NoSuchProductException")
         void testFindByIdThrowNoSuchProductException() {
+            long id = 2L;
+
             doThrow(new NoSuchProductException(""))
                     .when(productRepository)
-                    .findById(NEW_ID);
+                    .findById(id);
 
-            assertThrows(NoSuchProductException.class, () -> productService.findById(NEW_ID));
+            assertThrows(NoSuchProductException.class, () -> productService.findById(id));
         }
 
         @Test
         @DisplayName("test throw NoSuchProductException with expected message")
         void testFindByIdThrowNoSuchProductExceptionWithExpectedMessage() {
-            String expectedMessage = "Product with ID " + ID + " does not exist";
+            long id = 1L;
+            String expectedMessage = "Product with ID " + id + " does not exist";
 
-            Exception exception = assertThrows(NoSuchProductException.class, () -> productService.findById(ID));
+            Exception exception = assertThrows(NoSuchProductException.class, () -> productService.findById(id));
             String actualMessage = exception.getMessage();
 
             assertThat(actualMessage).isEqualTo(expectedMessage);
@@ -107,14 +110,15 @@ class ProductServiceImplTest {
         @Test
         @DisplayName("test should return expected ProductDto")
         void testFindByIdShouldReturnExpectedProductDto() {
-            Product mockedProduct = getMockedProduct();
+            Product mockedProduct = productTestBuilder.build();
+            long id = mockedProduct.getId();
             ProductDto expectedValue = productMapper.toProductDto(mockedProduct);
 
             doReturn(Optional.of(mockedProduct))
                     .when(productRepository)
-                    .findById(ID);
+                    .findById(id);
 
-            ProductDto actualValue = productService.findById(ID);
+            ProductDto actualValue = productService.findById(id);
 
             assertThat(actualValue).isEqualTo(expectedValue);
         }
@@ -127,14 +131,14 @@ class ProductServiceImplTest {
         @Test
         @DisplayName("test should return expected ProductDto")
         void testSaveShouldReturnExpectedProductDto() {
-            Product mockedProduct = getMockedProduct();
+            Product mockedProduct = productTestBuilder.build();
             ProductDto expectedValue = productMapper.toProductDto(mockedProduct);
 
             doAnswer(invocationOnMock -> invocationOnMock.getArgument(0))
                     .when(productRepository)
                     .save(any(Product.class));
 
-            ProductDto actualValue = productService.save(productMapper.toProductDto(getMockedProduct()));
+            ProductDto actualValue = productService.save(productMapper.toProductDto(productTestBuilder.build()));
 
             assertThat(actualValue).isEqualTo(expectedValue);
         }
@@ -147,18 +151,20 @@ class ProductServiceImplTest {
         @Test
         @DisplayName("test should return ProductDto with new quantity")
         void testUpdateShouldReturnProductDtoWithNewQuantity() {
-            Product mockedProduct = getMockedProduct();
+            Product mockedProduct = productTestBuilder.build();
             ProductDto expectedValue = productMapper.toProductDto(mockedProduct);
+            long id = mockedProduct.getId();
+            int newQuantity = 2;
 
             doReturn(Optional.of(mockedProduct))
                     .when(productRepository)
-                    .findById(ID);
+                    .findById(id);
 
             doReturn(mockedProduct)
                     .when(productRepository)
                     .save(mockedProduct);
 
-            ProductDto actualValue = productService.update(ID, NEW_QUANTITY);
+            ProductDto actualValue = productService.update(id, newQuantity);
 
             assertThat(actualValue.id()).isEqualTo(expectedValue.id());
             assertThat(actualValue.quantity()).isNotEqualTo(expectedValue.quantity());
@@ -167,14 +173,16 @@ class ProductServiceImplTest {
         @Test
         @DisplayName("test should return same ProductDto without update")
         void testUpdateShouldReturnProductDtoWithoutUpdate() {
-            Product mockedProduct = getMockedProduct();
+            Product mockedProduct = productTestBuilder.build();
             ProductDto expectedValue = productMapper.toProductDto(mockedProduct);
+            long id = mockedProduct.getId();
+            int oldQuantity = mockedProduct.getQuantity();
 
             doReturn(Optional.of(mockedProduct))
                     .when(productRepository)
-                    .findById(ID);
+                    .findById(id);
 
-            ProductDto actualValue = productService.update(ID, QUANTITY);
+            ProductDto actualValue = productService.update(id, oldQuantity);
 
             assertThat(actualValue).isEqualTo(expectedValue);
         }
@@ -187,54 +195,23 @@ class ProductServiceImplTest {
         @Test
         @DisplayName("test should invoke method 1 time")
         void testDeleteById() {
-            Product mockedProduct = getMockedProduct();
+            Product mockedProduct = productTestBuilder.build();
+            long id = mockedProduct.getId();
 
             doReturn(Optional.of(mockedProduct))
                     .when(productRepository)
-                    .findById(ID);
+                    .findById(id);
 
             doNothing()
                     .when(productRepository)
-                    .deleteById(ID);
+                    .deleteById(id);
 
-            productService.deleteById(ID);
+            productService.deleteById(id);
 
             verify(productRepository, times(1))
-                    .deleteById(ID);
+                    .deleteById(id);
         }
 
-    }
-
-    private Product getMockedProduct() {
-        return Product.builder()
-                .id(ID)
-                .quantity(QUANTITY)
-                .name(NAME)
-                .price(PRICE)
-                .total(PRICE.multiply(BigDecimal.valueOf(QUANTITY)))
-                .promotion(PROMOTION)
-                .build();
-    }
-
-    private List<Product> getMockedProducts() {
-        return List.of(
-                Product.builder()
-                        .id(NEW_ID)
-                        .quantity(NEW_QUANTITY)
-                        .name(NAME)
-                        .price(PRICE)
-                        .total(PRICE.multiply(BigDecimal.valueOf(QUANTITY)))
-                        .promotion(PROMOTION)
-                        .build(),
-                Product.builder()
-                        .id(ID)
-                        .quantity(QUANTITY)
-                        .name(NAME)
-                        .price(PRICE)
-                        .total(PRICE.multiply(BigDecimal.valueOf(QUANTITY)))
-                        .promotion(PROMOTION)
-                        .build()
-        );
     }
 
 }
