@@ -32,7 +32,7 @@ class CashReceiptInformationServiceImplTest {
     }
 
     @Test
-    @DisplayName("test createCashReceiptHeader method should return expected string with date and time")
+    @DisplayName("test createCashReceiptHeader method should contains expected string with date and time")
     void testCreateCashReceiptHeaderShouldReturnExpectedString() {
         Clock clock = Clock.fixed(Instant.parse("2022-12-20T12:19:36Z"), ZoneId.of("UTC"));
         String expectedValue = "DATE: %s TIME: %s".formatted(LocalDate.now(clock),
@@ -105,7 +105,7 @@ class CashReceiptInformationServiceImplTest {
     }
 
     @Test
-    @DisplayName("test createCashReceiptPromoDiscount method should return expected string")
+    @DisplayName("test createCashReceiptPromoDiscount method should contains expected string")
     void testCreateCashReceiptPromoDiscountShouldReturnExpectedString() {
         String expectedStringValue = "Samovar";
         BigDecimal expectedDecimalValue = new BigDecimal("256.23");

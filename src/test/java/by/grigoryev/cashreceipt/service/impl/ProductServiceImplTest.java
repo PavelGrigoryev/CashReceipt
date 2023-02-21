@@ -12,14 +12,21 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mapstruct.factory.Mappers;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.math.BigDecimal;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -33,7 +40,9 @@ class ProductServiceImplTest {
     @Mock
     private ProductRepository productRepository;
     private final ProductMapper productMapper = Mappers.getMapper(ProductMapper.class);
-    private final ProductTestBuilder testBuilder = ProductTestBuilder.aProduct();
+    private static final ProductTestBuilder testBuilder = ProductTestBuilder.aProduct();
+    @Captor
+    private ArgumentCaptor<Product> captor;
 
     @BeforeEach
     void setUp() {
@@ -131,19 +140,22 @@ class ProductServiceImplTest {
     @Nested
     class SaveTest {
 
-        @Test
-        @DisplayName("test should return expected ProductDto")
-        void testSaveShouldReturnExpectedProductDto() {
-            Product mockedProduct = testBuilder.build();
-            ProductDto expectedValue = productMapper.toProductDto(mockedProduct);
-
-            doAnswer(invocationOnMock -> invocationOnMock.getArgument(0))
+        @ParameterizedTest(name = "{arguments} test")
+        @DisplayName("test should capture save value")
+        @MethodSource("by.grigoryev.cashreceipt.service.impl.ProductServiceImplTest#getArgumentsForSaveTest")
+        void testSaveShouldCapturedValue(Product expectedValue) {
+            doReturn(expectedValue)
                     .when(productRepository)
-                    .save(any(Product.class));
+                    .save(expectedValue);
 
-            ProductDto actualValue = productService.save(productMapper.toProductDto(testBuilder.build()));
+            productService.save(productMapper.toProductDto(expectedValue));
 
-            assertThat(actualValue).isEqualTo(expectedValue);
+            verify(productRepository)
+                    .save(captor.capture());
+
+            Product captorValue = captor.getValue();
+
+            assertThat(captorValue).isEqualTo(expectedValue);
         }
 
     }
@@ -215,6 +227,28 @@ class ProductServiceImplTest {
                     .deleteById(id);
         }
 
+    }
+
+    private static Stream<Arguments> getArgumentsForSaveTest() {
+        return Stream.of(
+                Arguments.of(
+                        testBuilder.build()
+                ),
+                Arguments.of(
+                        testBuilder.withId(2L)
+                        .withName("Banana")
+                        .withQuantity(5)
+                        .withPrice(BigDecimal.TEN)
+                        .build()
+                ),
+                Arguments.of(
+                        testBuilder.withId(3L)
+                        .withName("Jingles")
+                        .withQuantity(41)
+                        .withPromotion(false).
+                        build()
+                )
+        );
     }
 
 }

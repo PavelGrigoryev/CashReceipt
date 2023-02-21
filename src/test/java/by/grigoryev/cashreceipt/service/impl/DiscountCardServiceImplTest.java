@@ -12,13 +12,20 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mapstruct.factory.Mappers;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -32,7 +39,9 @@ class DiscountCardServiceImplTest {
     @Mock
     private DiscountCardRepository discountCardRepository;
     private final DiscountCardMapper discountCardMapper = Mappers.getMapper(DiscountCardMapper.class);
-    private final DiscountCardTestBuilder testBuilder = DiscountCardTestBuilder.aDiscountCard();
+    private static final DiscountCardTestBuilder testBuilder = DiscountCardTestBuilder.aDiscountCard();
+    @Captor
+    private ArgumentCaptor<DiscountCard> captor;
 
     @BeforeEach
     void setUp() {
@@ -122,20 +131,22 @@ class DiscountCardServiceImplTest {
     @Nested
     class SaveTest {
 
-        @Test
-        @DisplayName("test should return expected DiscountCardDto")
-        void testSaveShouldReturnExpectedDiscountCardDto() {
-            DiscountCard mockedDiscountCard = testBuilder.build();
-            DiscountCardDto expectedValue = discountCardMapper.toDiscountCardDto(mockedDiscountCard);
-
-            doAnswer(invocationOnMock -> invocationOnMock.getArgument(0))
+        @ParameterizedTest(name = "{arguments} test")
+        @DisplayName("test should capture save value")
+        @MethodSource("by.grigoryev.cashreceipt.service.impl.DiscountCardServiceImplTest#getArgumentsForSaveTest")
+        void testSaveShouldCaptureValue(DiscountCard expectedValue) {
+            doReturn(expectedValue)
                     .when(discountCardRepository)
-                    .save(any(DiscountCard.class));
+                    .save(expectedValue);
 
-            DiscountCardDto actualValue = discountCardService
-                    .save(discountCardMapper.toDiscountCardDto(testBuilder.build()));
+            discountCardService.save(discountCardMapper.toDiscountCardDto(expectedValue));
 
-            assertThat(actualValue).isEqualTo(expectedValue);
+            verify(discountCardRepository)
+                    .save(captor.capture());
+
+            DiscountCard captorValue = captor.getValue();
+
+            assertThat(captorValue).isEqualTo(expectedValue);
         }
 
     }
@@ -210,6 +221,26 @@ class DiscountCardServiceImplTest {
                     .deleteById(id);
         }
 
+    }
+
+    private static Stream<Arguments> getArgumentsForSaveTest() {
+        return Stream.of(
+                Arguments.of(
+                        testBuilder.build()
+                ),
+                Arguments.of(
+                        testBuilder.withId(2L)
+                                .withDiscountCardNumber("9876")
+                                .withDiscountPercentage(BigDecimal.TEN)
+                                .build()
+                ),
+                Arguments.of(
+                        testBuilder.withId(2L)
+                                .withDiscountCardNumber("5566")
+                                .withDiscountPercentage(BigDecimal.valueOf(7.5))
+                                .build()
+                )
+        );
     }
 
 }
