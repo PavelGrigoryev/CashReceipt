@@ -90,6 +90,20 @@ class ProductServiceImplTest {
             assertThat(actualValues).isEqualTo(expectedValues);
         }
 
+        @Test
+        @DisplayName("test should return empty List")
+        void testFindAllShouldReturnEmptyList() {
+            List<ProductDto> expectedValues = List.of();
+
+            doReturn(List.of())
+                    .when(productRepository)
+                    .findAll();
+
+            List<ProductDto> actualValues = productService.findAll();
+
+            assertThat(actualValues).isEqualTo(expectedValues);
+        }
+
     }
 
     @Nested
@@ -143,7 +157,7 @@ class ProductServiceImplTest {
         @ParameterizedTest(name = "{arguments} test")
         @DisplayName("test should capture save value")
         @MethodSource("by.grigoryev.cashreceipt.service.impl.ProductServiceImplTest#getArgumentsForSaveTest")
-        void testSaveShouldCapturedValue(Product expectedValue) {
+        void testSaveShouldCaptureValue(Product expectedValue) {
             doReturn(expectedValue)
                     .when(productRepository)
                     .save(expectedValue);

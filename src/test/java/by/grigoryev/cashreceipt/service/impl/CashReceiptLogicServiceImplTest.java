@@ -41,9 +41,7 @@ class CashReceiptLogicServiceImplTest {
     @InjectMocks
     private CashReceiptLogicServiceImpl cashReceiptLogicService;
     private final ProductTestBuilder productTestBuilder = ProductTestBuilder.aProduct();
-    private final DiscountCardTestBuilder discountCardTestBuilder = DiscountCardTestBuilder.aDiscountCard();
     private final ProductMapper productMapper = Mappers.getMapper(ProductMapper.class);
-    private final DiscountCardMapper discountCardMapper = Mappers.getMapper(DiscountCardMapper.class);
 
     @BeforeEach
     void setUp() {
@@ -71,7 +69,8 @@ class CashReceiptLogicServiceImplTest {
     @Test
     @DisplayName("test getDiscount method should return 3")
     void testGetDiscountShouldReturnThree() {
-        DiscountCardDto mockedDiscountCardDto = discountCardMapper.toDiscountCardDto(discountCardTestBuilder.build());
+        DiscountCardDto mockedDiscountCardDto = Mappers.getMapper(DiscountCardMapper.class)
+                .toDiscountCardDto(DiscountCardTestBuilder.aDiscountCard().build());
         BigDecimal expectedValue = new BigDecimal("3");
 
         BigDecimal actualValue = cashReceiptLogicService.getDiscount(BigDecimal.valueOf(100), mockedDiscountCardDto);

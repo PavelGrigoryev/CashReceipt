@@ -81,6 +81,20 @@ class DiscountCardServiceImplTest {
             assertThat(actualValues).isEqualTo(expectedValues);
         }
 
+        @Test
+        @DisplayName("test should return empty List")
+        void testFindAllShouldReturnEmptyList() {
+            List<DiscountCardDto> expectedValues = List.of();
+
+            doReturn(List.of())
+                    .when(discountCardRepository)
+                    .findAll();
+
+            List<DiscountCardDto> actualValues = discountCardService.findAll();
+
+            assertThat(actualValues).isEqualTo(expectedValues);
+        }
+
     }
 
     @Nested
@@ -235,7 +249,7 @@ class DiscountCardServiceImplTest {
                                 .build()
                 ),
                 Arguments.of(
-                        testBuilder.withId(2L)
+                        testBuilder.withId(3L)
                                 .withDiscountCardNumber("5566")
                                 .withDiscountPercentage(BigDecimal.valueOf(7.5))
                                 .build()

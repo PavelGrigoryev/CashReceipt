@@ -1,7 +1,9 @@
 package by.grigoryev.cashreceipt.service.impl;
 
 import by.grigoryev.cashreceipt.dto.ProductDto;
+import by.grigoryev.cashreceipt.mapper.ProductMapper;
 import by.grigoryev.cashreceipt.service.CashReceiptInformationService;
+import by.grigoryev.cashreceipt.util.testbuilder.ProductTestBuilder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -9,6 +11,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.mapstruct.factory.Mappers;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -47,14 +50,8 @@ class CashReceiptInformationServiceImplTest {
     @Test
     @DisplayName("test createCashReceiptBody method should return expected string")
     void testCreateCashReceiptBodyShouldReturnExpectedString() {
-        ProductDto mockedProductDto = new ProductDto(
-                1L,
-                3,
-                "Samovar",
-                BigDecimal.valueOf(5),
-                BigDecimal.valueOf(15),
-                true
-        );
+        ProductDto mockedProductDto = Mappers.getMapper(ProductMapper.class)
+                .toProductDto(ProductTestBuilder.aProduct().build());
 
         String expectedValue = """
                 %-2s  | %-15s | %-6s | %s
