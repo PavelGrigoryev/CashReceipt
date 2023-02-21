@@ -14,7 +14,7 @@ import java.time.format.DateTimeFormatter;
 public class CashReceiptInformationServiceImpl implements CashReceiptInformationService {
 
     @Override
-    public StringBuilder createCashReceiptHeader() {
+    public StringBuilder createCashReceiptHeader(LocalDate date, LocalTime time) {
         return new StringBuilder("""
                             
                 Cash Receipt
@@ -22,8 +22,8 @@ public class CashReceiptInformationServiceImpl implements CashReceiptInformation
                 %s
                 %-6s %-15s %6s %8s
                 """.formatted(
-                LocalDate.now(),
-                LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")),
+                date,
+                time.format(DateTimeFormatter.ofPattern("HH:mm:ss")),
                 "-".repeat(40),
                 "QTY",
                 "DESCRIPTION",

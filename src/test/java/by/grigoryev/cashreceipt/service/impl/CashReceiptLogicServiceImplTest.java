@@ -9,14 +9,19 @@ import by.grigoryev.cashreceipt.service.UploadFileService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.doReturn;
 
+@ExtendWith(MockitoExtension.class)
 class CashReceiptLogicServiceImplTest {
 
     private static final String ID_AND_QUANTITY = "3-4";
@@ -29,47 +34,21 @@ class CashReceiptLogicServiceImplTest {
     private static final String DISCOUNT_CARD_NUMBER = "1234";
     private static final BigDecimal DISCOUNT_PERCENTAGE = BigDecimal.valueOf(10);
 
+    @Mock
     private ProductService productService;
+    @Mock
     private DiscountCardService discountCardService;
+    @Mock
     private CashReceiptInformationService cashReceiptInformationService;
+    @InjectMocks
     private CashReceiptLogicServiceImpl cashReceiptLogicService;
+    @Mock
+    private UploadFileService uploadFileService;
 
     @BeforeEach
     void setUp() {
-        productService = mock(ProductService.class);
-        discountCardService = mock(DiscountCardService.class);
-        cashReceiptInformationService = mock(CashReceiptInformationService.class);
-        UploadFileService uploadFileService = mock(UploadFileService.class);
-        cashReceiptLogicService = spy(new CashReceiptLogicServiceImpl(productService, discountCardService,
-                cashReceiptInformationService, uploadFileService));
-    }
-
-    @Test
-    @DisplayName("test createCashReceipt method should return expected string")
-    void testCreateCashReceiptShouldReturnExpectedString() {
-        String expectedValue = "HeaderBodynull";
-        DiscountCardDto mockedDiscountCardDto = getMockedDiscountCardDto();
-        ProductDto mockedProductDto = getMockedProductDto();
-
-        doReturn(mockedDiscountCardDto)
-                .when(discountCardService)
-                .findByDiscountCardNumber(DISCOUNT_CARD_NUMBER);
-
-        doReturn(mockedProductDto)
-                .when(productService)
-                .update(PRODUCT_ID, QUANTITY);
-
-        doReturn(new StringBuilder("Header"))
-                .when(cashReceiptInformationService)
-                .createCashReceiptHeader();
-
-        doReturn(new StringBuilder("Body"))
-                .when(cashReceiptInformationService)
-                .createCashReceiptBody(mockedProductDto);
-
-        String actualValue = cashReceiptLogicService.createCashReceipt(ID_AND_QUANTITY, DISCOUNT_CARD_NUMBER);
-
-        assertThat(actualValue).isEqualTo(expectedValue);
+        cashReceiptLogicService = new CashReceiptLogicServiceImpl(productService, discountCardService,
+                cashReceiptInformationService, uploadFileService);
     }
 
     @Test

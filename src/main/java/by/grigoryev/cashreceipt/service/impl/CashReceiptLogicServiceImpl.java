@@ -9,6 +9,8 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -35,7 +37,8 @@ public class CashReceiptLogicServiceImpl implements CashReceiptLogicService {
         BigDecimal discount = getDiscount(totalSum, discountCardDto);
         BigDecimal totalSumWithDiscount = totalSum.subtract(discount);
 
-        StringBuilder checkBuilder = cashReceiptInformationService.createCashReceiptHeader();
+        StringBuilder checkBuilder = cashReceiptInformationService
+                .createCashReceiptHeader(LocalDate.now(), LocalTime.now());
         StringBuilder promoDiscBuilder = new StringBuilder();
 
         totalSumWithDiscount = getTotalSumWithDiscount(productDtoList, totalSumWithDiscount,

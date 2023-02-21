@@ -14,9 +14,7 @@ import java.math.BigDecimal;
 public class DiscountCardTestBuilder implements TestBuilder<DiscountCard> {
 
     private Long id = 1L;
-
     private String discountCardNumber = "1234";
-
     private BigDecimal discountPercentage = BigDecimal.valueOf(3);
 
     @Override

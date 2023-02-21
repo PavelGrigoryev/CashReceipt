@@ -14,13 +14,9 @@ import java.math.BigDecimal;
 public class ProductTestBuilder implements TestBuilder<Product> {
 
     private Long id = 1L;
-
     private Integer quantity = 3;
-
     private String name = "Samovar";
-
     private BigDecimal price = BigDecimal.valueOf(256.24);
-
     private Boolean promotion = true;
 
     @Override
