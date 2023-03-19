@@ -1,12 +1,12 @@
 package ru.clevertec.cashreceipt.service.impl;
 
-import ru.clevertec.cashreceipt.service.UploadFileService;
 import com.github.marschall.memoryfilesystem.MemoryFileSystemBuilder;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
+import ru.clevertec.cashreceipt.service.UploadFileService;
 
 import java.io.IOException;
 import java.nio.file.FileSystem;
@@ -24,17 +24,30 @@ class UploadFileServiceImplTest {
     private static final String CASH_RECEIPT = "CashReceipt";
 
     @Test
-    @DisplayName("test uploadFile method should save a file.txt")
-    void testUploadFileShouldSaveFile() throws IOException {
+    @DisplayName("test uploadFileTxt method should save a file.txt")
+    void testUploadFileTxtShouldSaveFileTxt() throws IOException {
         FileSystem fileSystem = MemoryFileSystemBuilder.newEmpty().build();
 
         Path path = fileSystem.getPath("CashReceipt1.txt");
         Path expectedValue = Files.write(path, CASH_RECEIPT.getBytes());
 
-        Path actualValue = uploadFileService.uploadFile(CASH_RECEIPT);
+        Path actualValue = uploadFileService.uploadFileTxt(CASH_RECEIPT);
 
         assertThat(Files.exists(expectedValue)).isTrue();
         assertThat(Files.readString(expectedValue)).isEqualTo(Files.readString(actualValue));
+
+        fileSystem.close();
+    }
+
+    @Test
+    @DisplayName("test uploadFilePdf method should save a file.pdf")
+    void testUploadFilePdfShouldSaveFilePdf() throws IOException {
+        FileSystem fileSystem = MemoryFileSystemBuilder.newEmpty().build();
+
+        Path path = fileSystem.getPath("CashReceipt1.pdf");
+        Path expectedValue = Files.write(path, CASH_RECEIPT.getBytes());
+
+        assertThat(Files.exists(expectedValue)).isTrue();
 
         fileSystem.close();
     }

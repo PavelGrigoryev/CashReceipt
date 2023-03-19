@@ -47,7 +47,8 @@ public class CashReceiptLogicServiceImpl implements CashReceiptLogicService {
         checkBuilder.append(cashReceiptInformationService.createCashReceiptResults(totalSum,
                 discountCardDto.discountPercentage(), discount, promoDiscBuilder, totalSumWithDiscount));
 
-        uploadFileService.uploadFile(checkBuilder.toString());
+        uploadFileService.uploadFileTxt(checkBuilder.toString());
+        uploadFileService.uploadFilePdf(checkBuilder.toString());
 
         log.info(checkBuilder.toString());
         return checkBuilder.toString();
