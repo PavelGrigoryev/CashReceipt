@@ -1,34 +1,31 @@
-package ru.clevertec.cashreceipt.service.impl;
+package ru.clevertec.cashreceipt.service.factory;
 
 import com.itextpdf.text.*;
-import com.itextpdf.text.pdf.*;
+import com.itextpdf.text.pdf.PdfContentByte;
+import com.itextpdf.text.pdf.PdfImportedPage;
+import com.itextpdf.text.pdf.PdfReader;
+import com.itextpdf.text.pdf.PdfWriter;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
-import ru.clevertec.cashreceipt.service.UploadFileService;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+/**
+ * The PdfUploadFileFactory class represents a factory for creating objects that can upload PDF files
+ */
 @Slf4j
-@Service
-public class UploadFileServiceImpl implements UploadFileService {
+public class PdfUploadFileFactory implements UploadFileFactory {
 
+    /**
+     * Uploads a file in PDF format using the given cashReceipt string and returns the path to the uploaded file
+     *
+     * @param cashReceipt a string containing information to be inserted into the uploaded PDF file
+     * @return the path to the uploaded file
+     */
     @Override
-    public Path uploadFileTxt(String cashReceipt) {
-        Path path = Paths.get("src/main/resources/txt/CashReceipt.txt");
-        try {
-            Path file = Files.write(path, cashReceipt.getBytes());
-            log.info("uploadFileTxt {}", file);
-        } catch (IOException e) {
-            log.error(e.getMessage());
-        }
-        return path;
-    }
-
-    @Override
-    public Path uploadFilePdf(String cashReceipt) {
+    public Path uploadFile(String cashReceipt) {
         Path path = Paths.get("src/main/resources/pdf/CashReceipt.pdf");
         try {
             Document document = new Document(PageSize.A4);

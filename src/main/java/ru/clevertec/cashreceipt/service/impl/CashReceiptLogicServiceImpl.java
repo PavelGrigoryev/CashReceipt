@@ -2,9 +2,14 @@ package ru.clevertec.cashreceipt.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import ru.clevertec.cashreceipt.dto.ProductDto;
-import ru.clevertec.cashreceipt.service.*;
+import ru.clevertec.cashreceipt.service.CashReceiptInformationService;
+import ru.clevertec.cashreceipt.service.CashReceiptLogicService;
+import ru.clevertec.cashreceipt.service.DiscountCardService;
+import ru.clevertec.cashreceipt.service.ProductService;
+import ru.clevertec.cashreceipt.service.factory.UploadFactory;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -24,7 +29,10 @@ public class CashReceiptLogicServiceImpl implements CashReceiptLogicService {
 
     private final CashReceiptInformationService cashReceiptInformationService;
 
-    private final UploadFileService uploadFileService;
+    private final UploadFactory uploadFactory;
+
+    @Value("${upload.file}")
+    private String fileType;
 
     @Override
     public String createCashReceipt(String idAndQuantity, String discountCardNumber) {
@@ -49,8 +57,7 @@ public class CashReceiptLogicServiceImpl implements CashReceiptLogicService {
                 ))
                 .map(StringBuilder::toString)
                 .stream()
-                .peek(uploadFileService::uploadFileTxt)
-                .peek(uploadFileService::uploadFilePdf)
+                .peek(s -> uploadFactory.create(fileType).uploadFile(s))
                 .findFirst()
                 .orElse("");
 

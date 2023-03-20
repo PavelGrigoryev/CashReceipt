@@ -1,6 +1,6 @@
 
 Cash Receipt
-DATE: 2023-03-20 TIME: 21:37:37
+DATE: 2023-03-20 TIME: 23:10:34
 ----------------------------------------
 QTY    DESCRIPTION      PRICE    TOTAL
 6   | Woolen gloves   | 30.89  | 185.34

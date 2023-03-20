@@ -1,4 +1,4 @@
-package ru.clevertec.cashreceipt.service.impl;
+package ru.clevertec.cashreceipt.service.factory;
 
 import com.github.marschall.memoryfilesystem.MemoryFileSystemBuilder;
 import org.junit.jupiter.api.DisplayName;
@@ -6,7 +6,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
-import ru.clevertec.cashreceipt.service.UploadFileService;
 
 import java.io.IOException;
 import java.nio.file.FileSystem;
@@ -16,37 +15,26 @@ import java.nio.file.Path;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(MockitoExtension.class)
-class UploadFileServiceImplTest {
+class TxtUploadFileFactoryTest {
 
     @Spy
-    private UploadFileService uploadFileService = new UploadFileServiceImpl();
-
-    private static final String CASH_RECEIPT = "CashReceipt";
+    private TxtUploadFileFactory txtUploadFileFactory;
 
     @Test
     @DisplayName("test uploadFileTxt method should save a file.txt")
     void testUploadFileTxtShouldSaveFileTxt() throws IOException {
+        String cashReceipt = "Test cash receipt";
         FileSystem fileSystem = MemoryFileSystemBuilder.newEmpty().build();
 
         Path path = fileSystem.getPath("CashReceipt1.txt");
-        Path expectedValue = Files.write(path, CASH_RECEIPT.getBytes());
+        Path expectedValue = Files.write(path, cashReceipt.getBytes());
 
-        Path actualValue = uploadFileService.uploadFileTxt(CASH_RECEIPT);
+        Path actualValue = txtUploadFileFactory.uploadFile(cashReceipt);
 
         assertThat(Files.exists(expectedValue)).isTrue();
         assertThat(Files.readString(expectedValue)).isEqualTo(Files.readString(actualValue));
 
         fileSystem.close();
-    }
-
-    @Test
-    @DisplayName("test uploadFilePdf method should save a file.pdf")
-    void testUploadFilePdfShouldSaveFilePdf() throws IOException {
-        String cashReceipt = "Test cash receipt";
-        Path pdfPath = uploadFileService.uploadFilePdf(cashReceipt);
-
-        assertThat(Files.exists(pdfPath)).isTrue();
-        assertThat(Files.size(pdfPath)).isGreaterThan(5);
     }
 
 }
