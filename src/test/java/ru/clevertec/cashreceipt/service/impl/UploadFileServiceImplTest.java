@@ -42,14 +42,11 @@ class UploadFileServiceImplTest {
     @Test
     @DisplayName("test uploadFilePdf method should save a file.pdf")
     void testUploadFilePdfShouldSaveFilePdf() throws IOException {
-        FileSystem fileSystem = MemoryFileSystemBuilder.newEmpty().build();
+        String cashReceipt = "Test cash receipt";
+        Path pdfPath = uploadFileService.uploadFilePdf(cashReceipt);
 
-        Path path = fileSystem.getPath("CashReceipt1.pdf");
-        Path expectedValue = Files.write(path, CASH_RECEIPT.getBytes());
-
-        assertThat(Files.exists(expectedValue)).isTrue();
-
-        fileSystem.close();
+        assertThat(Files.exists(pdfPath)).isTrue();
+        assertThat(Files.size(pdfPath)).isGreaterThan(5);
     }
 
 }

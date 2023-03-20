@@ -34,8 +34,9 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public ProductDto findById(Long id) {
-        ProductDto productDto = productMapper.toProductDto(productRepository.findById(id)
-                .orElseThrow(() -> new NoSuchProductException("Product with ID " + id + " does not exist")));
+        ProductDto productDto = productRepository.findById(id)
+                .map(productMapper::toProductDto)
+                .orElseThrow(() -> new NoSuchProductException("Product with ID " + id + " does not exist"));
         log.info("findById {}", productDto);
         return productDto;
     }
@@ -50,24 +51,21 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public ProductDto update(Long id, Integer quantity) {
-        Product product = productRepository.findById(id)
+        return productRepository.findById(id)
+                .map(product -> {
+                    if (!quantity.equals(product.getQuantity())) {
+                        product.setQuantity(quantity);
+                        product.setTotal(product.getPrice().multiply(BigDecimal.valueOf(quantity)));
+                        Product updatedProduct = productRepository.save(product);
+                        log.info("update {}", updatedProduct);
+                        return productMapper.toProductDto(updatedProduct);
+                    } else {
+                        ProductDto productDto = productMapper.toProductDto(product);
+                        log.info("no update {}", productDto);
+                        return productDto;
+                    }
+                })
                 .orElseThrow(() -> new NoSuchProductException("Product with ID " + id + " does not exist"));
-
-        if (!quantity.equals(product.getQuantity())) {
-            product.setId(id);
-            product.setQuantity(quantity);
-            product.setTotal(product.getPrice().multiply(BigDecimal.valueOf(quantity)));
-
-            Product updatedProduct = productRepository.save(product);
-            ProductDto productDto = productMapper.toProductDto(updatedProduct);
-            log.info("update {}", productDto);
-            return productDto;
-        } else {
-            ProductDto productDto = productMapper.toProductDto(product);
-            log.info("no update {}", productDto);
-            return productDto;
-        }
-
     }
 
     @Override

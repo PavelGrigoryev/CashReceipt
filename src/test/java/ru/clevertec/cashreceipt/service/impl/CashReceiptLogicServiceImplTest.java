@@ -65,6 +65,19 @@ class CashReceiptLogicServiceImplTest {
     }
 
     @Test
+    @DisplayName("test promotionFilter method should not add promotion discount when product has no promotion")
+    void testPromotionFilterShouldNotAddPromotionDiscountWhenProductHasNoPromotion() {
+        StringBuilder promoDiscountBuilder = new StringBuilder();
+        BigDecimal[] promoDiscount = {BigDecimal.ZERO};
+        ProductDto productDto = productMapper.toProductDto(ProductTestBuilder.aProduct().build());
+
+        cashReceiptLogicService.promotionFilter(promoDiscountBuilder, promoDiscount, productDto);
+
+        assertThat(promoDiscountBuilder).isEmpty();
+        assertThat(promoDiscount[0]).isEqualTo(BigDecimal.ZERO);
+    }
+
+    @Test
     @DisplayName("test getCashReceiptResults method should return expected value")
     void testGetCashReceiptResultsShouldReturnExpectedValue() {
         DiscountCard discountCard = DiscountCardTestBuilder.aDiscountCard().build();
