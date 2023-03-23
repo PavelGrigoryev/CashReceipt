@@ -1,4 +1,4 @@
-package ru.clevertec.cashreceipt.service.factory;
+package ru.clevertec.cashreceipt.service.factory.impl;
 
 import com.itextpdf.text.*;
 import com.itextpdf.text.pdf.PdfContentByte;
@@ -6,6 +6,7 @@ import com.itextpdf.text.pdf.PdfImportedPage;
 import com.itextpdf.text.pdf.PdfReader;
 import com.itextpdf.text.pdf.PdfWriter;
 import lombok.extern.slf4j.Slf4j;
+import ru.clevertec.cashreceipt.service.factory.UploadFileFactory;
 
 import java.io.IOException;
 import java.nio.file.Files;

@@ -16,7 +16,7 @@ import ru.clevertec.cashreceipt.model.DiscountCard;
 import ru.clevertec.cashreceipt.service.CashReceiptInformationService;
 import ru.clevertec.cashreceipt.service.DiscountCardService;
 import ru.clevertec.cashreceipt.service.ProductService;
-import ru.clevertec.cashreceipt.service.factory.UploadFactory;
+import ru.clevertec.cashreceipt.service.factory.impl.UploadFactoryImpl;
 import ru.clevertec.cashreceipt.util.testbuilder.DiscountCardTestBuilder;
 import ru.clevertec.cashreceipt.util.testbuilder.ProductTestBuilder;
 
@@ -36,7 +36,7 @@ class CashReceiptLogicServiceImplTest {
     @Mock
     private CashReceiptInformationService cashReceiptInformationService;
     @Mock
-    private UploadFactory uploadFactory;
+    private UploadFactoryImpl uploadFactoryImpl;
     @InjectMocks
     private CashReceiptLogicServiceImpl cashReceiptLogicService;
     private final ProductTestBuilder productTestBuilder = ProductTestBuilder.aProduct();
@@ -46,7 +46,7 @@ class CashReceiptLogicServiceImplTest {
     @BeforeEach
     void setUp() {
         cashReceiptLogicService = new CashReceiptLogicServiceImpl(productService, discountCardService,
-                cashReceiptInformationService, uploadFactory);
+                cashReceiptInformationService, uploadFactoryImpl);
     }
 
     @Test

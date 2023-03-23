@@ -1,4 +1,4 @@
-package ru.clevertec.cashreceipt.service.factory;
+package ru.clevertec.cashreceipt.service.factory.impl;
 
 import com.github.marschall.memoryfilesystem.MemoryFileSystemBuilder;
 import org.junit.jupiter.api.DisplayName;

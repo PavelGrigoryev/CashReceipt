@@ -1,6 +1,7 @@
-package ru.clevertec.cashreceipt.service.factory;
+package ru.clevertec.cashreceipt.service.factory.impl;
 
 import lombok.extern.slf4j.Slf4j;
+import ru.clevertec.cashreceipt.service.factory.UploadFileFactory;
 
 import java.io.IOException;
 import java.nio.file.Files;
