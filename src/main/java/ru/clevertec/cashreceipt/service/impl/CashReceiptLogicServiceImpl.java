@@ -59,7 +59,7 @@ public class CashReceiptLogicServiceImpl implements CashReceiptLogicService {
                 .stream()
                 .peek(s -> uploadFactory.create(fileType).uploadFile(s))
                 .findFirst()
-                .orElse("");
+                .orElseThrow(() -> new RuntimeException("The value is not in the stream"));
 
         log.info(cashReceipt);
         return cashReceipt;
