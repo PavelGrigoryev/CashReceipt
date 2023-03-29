@@ -21,12 +21,8 @@ public class ValidationExceptionHandler {
     public ValidationErrorResponse onConstraintValidationException(ConstraintViolationException exception) {
         List<Violation> violations = exception.getConstraintViolations()
                 .stream()
-                .map(
-                        constraintViolation -> new Violation(
-                                constraintViolation.getPropertyPath().toString(),
-                                constraintViolation.getMessage()
-                        )
-                )
+                .map(constraintViolation -> new Violation(constraintViolation.getPropertyPath().toString(),
+                        constraintViolation.getMessage()))
                 .toList();
 
         log.error("Violations: {}", violations);
