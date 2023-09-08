@@ -1,4 +1,4 @@
-package ru.clevertec.cashreceipt.controller;
+package ru.clevertec.cashreceipt.controller.xml;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import ru.clevertec.cashreceipt.controller.swagger.SwaggerDiscountCard;
+import ru.clevertec.cashreceipt.controller.swagger.XmlSwaggerDiscountCard;
 import ru.clevertec.cashreceipt.dto.DiscountCardDto;
 import ru.clevertec.cashreceipt.service.DiscountCardService;
 
@@ -18,8 +18,8 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/discountCards")
-public class DiscountCardController implements SwaggerDiscountCard {
+@RequestMapping(value = "/xml/discountCards", produces = "application/xml")
+public class XmlDiscountCardController implements XmlSwaggerDiscountCard {
 
     private final DiscountCardService discountCardService;
 

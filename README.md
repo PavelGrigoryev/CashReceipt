@@ -26,7 +26,7 @@
 3. In [application.properties](src/main/resources/application.properties) enter your username and password from your
    local postgresql in line №2, №3 and №9, №10. Also in line №1 and №11 there should be "localhost" and the line should
    look like this *=jdbc:postgresql://localhost:5432/cash_receipt
-4. Run [CashReceiptApplication.java](src/main/java/by/grigoryev/cashreceipt/CashReceiptApplication.java). Liquibase will
+4. Run [CashReceiptApplication.java](src/main/java/ru/clevertec/cashreceipt/CashReceiptApplication.java). Liquibase will
    create the required tables
 5. Run [data.sql](src/main/resources/data.sql). Data examples will be inserted to the tables
 6. Application is ready to work
@@ -94,3 +94,35 @@ In summary the application can:
     * Save product
 * **PUT**
     * Update product quantity by id
+
+## Cache Implementations
+
+This repository contains two implementations of a cache, one using the Least Recently Used (LRU) algorithm and one using
+the Least Frequently Used (LFU) algorithm.
+
+### LRUCache
+
+The `LRUCache` class extends `LinkedHashMap` and overrides the `removeEldestEntry` method to implement the LRU
+algorithm. It maintains a fixed capacity and removes the least recently used entry when the cache reaches its capacity.
+
+### LFUCache
+
+The `LFUCache` class implements the LFU algorithm using three maps: one to store the key-value pairs, one to store the
+frequency of each key, and one to store a set of keys for each frequency. It maintains a fixed capacity and removes the
+least frequently used entry when the cache reaches its capacity.
+
+### Usage
+
+To use either cache implementation, enter the algorithm and cache capacity
+in [application.yaml](src/main/resources/application.yaml), than simply create an instance of the class through factory
+method and use the `get`and `put` methods to retrieve and store values in the cache.
+
+```java
+CacheFactory<String, Integer> cacheFactory = new CacheFactoryImpl<>();
+Cache<String, Integer> cache = cacheFactory.createCache();
+
+cache.put("key1", 1);
+cache.put("key2", 2);
+int value1 = cache.get("key1");
+int value2 = cache.get("key2");
+```

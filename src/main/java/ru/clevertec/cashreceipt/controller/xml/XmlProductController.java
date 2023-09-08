@@ -1,4 +1,4 @@
-package ru.clevertec.cashreceipt.controller;
+package ru.clevertec.cashreceipt.controller.xml;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import ru.clevertec.cashreceipt.controller.swagger.SwaggerProduct;
+import ru.clevertec.cashreceipt.controller.swagger.XmlSwaggerProduct;
 import ru.clevertec.cashreceipt.dto.ProductDto;
 import ru.clevertec.cashreceipt.service.ProductService;
 
@@ -20,8 +20,8 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/products")
-public class ProductController implements SwaggerProduct {
+@RequestMapping(value = "/xml/products", produces = "application/xml")
+public class XmlProductController implements XmlSwaggerProduct {
 
     private final ProductService productService;
 
