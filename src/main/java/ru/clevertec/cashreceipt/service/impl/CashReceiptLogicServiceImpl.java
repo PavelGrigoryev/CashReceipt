@@ -1,19 +1,22 @@
 package ru.clevertec.cashreceipt.service.impl;
 
-import ru.clevertec.cashreceipt.dto.DiscountCardDto;
-import ru.clevertec.cashreceipt.dto.ProductDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import ru.clevertec.cashreceipt.service.*;
+import ru.clevertec.cashreceipt.dto.ProductDto;
+import ru.clevertec.cashreceipt.service.CashReceiptInformationService;
+import ru.clevertec.cashreceipt.service.CashReceiptLogicService;
+import ru.clevertec.cashreceipt.service.DiscountCardService;
+import ru.clevertec.cashreceipt.service.ProductService;
+import ru.clevertec.cashreceipt.service.factory.UploadFactory;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Stream;
 
 @Slf4j
 @Service
@@ -26,80 +29,90 @@ public class CashReceiptLogicServiceImpl implements CashReceiptLogicService {
 
     private final CashReceiptInformationService cashReceiptInformationService;
 
-    private final UploadFileService uploadFileService;
+    private final UploadFactory uploadFactory;
+
+    @Value("${upload.file}")
+    private String fileType;
 
     @Override
     public String createCashReceipt(String idAndQuantity, String discountCardNumber) {
-        List<ProductDto> productDtoList = new ArrayList<>();
-        BigDecimal totalSum = getTotalSum(idAndQuantity, productDtoList);
-
-        DiscountCardDto discountCardDto = discountCardService.findByDiscountCardNumber(discountCardNumber);
-        BigDecimal discount = getDiscount(totalSum, discountCardDto);
-        BigDecimal totalSumWithDiscount = totalSum.subtract(discount);
-
-        StringBuilder checkBuilder = cashReceiptInformationService
+        StringBuilder cashReceiptHeader = cashReceiptInformationService
                 .createCashReceiptHeader(LocalDate.now(), LocalTime.now());
-        StringBuilder promoDiscBuilder = new StringBuilder();
+        StringBuilder promoDiscountBuilder = new StringBuilder();
+        final BigDecimal[] promoDiscount = {new BigDecimal("0")};
 
-        totalSumWithDiscount = getTotalSumWithDiscount(productDtoList, totalSumWithDiscount,
-                checkBuilder, promoDiscBuilder);
+        String cashReceipt = getProducts(idAndQuantity)
+                .stream()
+                .peek(productDto -> cashReceiptHeader
+                        .append(cashReceiptInformationService.createCashReceiptBody(productDto)))
+                .peek(productDto -> promotionFilter(promoDiscountBuilder, promoDiscount, productDto))
+                .map(ProductDto::total)
+                .reduce(BigDecimal::add)
+                .map(totalSum -> getCashReceiptResults(
+                        discountCardNumber,
+                        cashReceiptHeader,
+                        promoDiscountBuilder,
+                        promoDiscount,
+                        totalSum
+                ))
+                .map(StringBuilder::toString)
+                .stream()
+                .peek(s -> uploadFactory.create(fileType).uploadFile(s))
+                .findFirst()
+                .orElseThrow(() -> new RuntimeException("The value is not in the stream"));
 
-        checkBuilder.append(cashReceiptInformationService.createCashReceiptResults(totalSum,
-                discountCardDto.discountPercentage(), discount, promoDiscBuilder, totalSumWithDiscount));
-
-        uploadFileService.uploadFile(checkBuilder.toString());
-
-        log.info(checkBuilder.toString());
-        return checkBuilder.toString();
+        log.info(cashReceipt);
+        return cashReceipt;
     }
 
-    protected BigDecimal getTotalSum(String idAndQuantity, List<ProductDto> productDtoList) {
-        List<ProductDto> products = idAndQuantity.lines()
+    protected List<ProductDto> getProducts(String idAndQuantity) {
+        return idAndQuantity.lines()
                 .map(s -> s.split(" "))
                 .flatMap(Arrays::stream)
                 .map(s -> s.split("-"))
                 .map(strings -> productService.update(Long.valueOf(strings[0]), Integer.valueOf(strings[1])))
                 .toList();
-
-        productDtoList.addAll(products);
-
-        return products.stream()
-                .map(ProductDto::total)
-                .reduce(BigDecimal::add)
-                .orElse(BigDecimal.ZERO);
     }
 
-    protected BigDecimal getDiscount(BigDecimal totalSum, DiscountCardDto discountCardDto) {
-        return totalSum.divide(BigDecimal.valueOf(100), 4, RoundingMode.UP)
-                .multiply(discountCardDto.discountPercentage());
+    protected void promotionFilter(StringBuilder promoDiscountBuilder, BigDecimal[] promoDiscount, ProductDto productDto) {
+        if (Boolean.TRUE.equals(productDto.promotion()) && productDto.quantity() > 5) {
+            BigDecimal promo = getPromotionDiscount(productDto);
+            promoDiscountBuilder.append(cashReceiptInformationService
+                    .createCashReceiptPromoDiscount(productDto.name(), promo));
+            promoDiscount[0] = promoDiscount[0].add(promo);
+        }
     }
 
-    protected BigDecimal getTotalSumWithDiscount(List<ProductDto> productDtoList,
-                                                 BigDecimal totalSumWithDiscount,
-                                                 StringBuilder checkBuilder,
-                                                 StringBuilder promoDiscBuilder) {
-        productDtoList.forEach(productDto -> checkBuilder
-                .append(cashReceiptInformationService.createCashReceiptBody(productDto)));
-
-        BigDecimal promoDiscountSum = productDtoList.stream()
-                .filter(productDto -> productDto.promotion() && productDto.quantity() > 5)
-                .map(productDto -> {
-                    BigDecimal promotionDiscount = getPromotionDiscount(productDto);
-                    promoDiscBuilder.append(cashReceiptInformationService
-                            .createCashReceiptPromoDiscount(productDto.name(), promotionDiscount));
-                    return promotionDiscount;
+    protected StringBuilder getCashReceiptResults(String discountCardNumber,
+                                                  StringBuilder cashReceiptHeader,
+                                                  StringBuilder promoDiscountBuilder,
+                                                  BigDecimal[] promoDiscount,
+                                                  BigDecimal totalSum) {
+        return Stream.of(discountCardService.findByDiscountCardNumber(discountCardNumber))
+                .map(discountCardDto -> {
+                    BigDecimal discount = getDiscount(totalSum, discountCardDto.discountPercentage());
+                    return cashReceiptHeader.append(
+                            cashReceiptInformationService.createCashReceiptResults(
+                                    totalSum,
+                                    discountCardDto.discountPercentage(),
+                                    discount,
+                                    promoDiscountBuilder,
+                                    totalSum.subtract(discount).subtract(promoDiscount[0]))
+                    );
                 })
-                .reduce(BigDecimal::add)
-                .orElse(BigDecimal.ZERO);
-
-        return totalSumWithDiscount
-                .subtract(promoDiscountSum);
+                .findFirst()
+                .orElse(new StringBuilder());
     }
 
     protected BigDecimal getPromotionDiscount(ProductDto productDto) {
         return productDto.total()
-                .divide(BigDecimal.valueOf(10), 4, RoundingMode.UP)
+                .multiply(BigDecimal.valueOf(0.1))
                 .stripTrailingZeros();
+    }
+
+    protected BigDecimal getDiscount(BigDecimal totalSum, BigDecimal percentage) {
+        return totalSum.multiply(BigDecimal.valueOf(0.01)
+                .multiply(percentage));
     }
 
 }

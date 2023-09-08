@@ -86,7 +86,7 @@ class CashReceiptInformationServiceImplTest {
                 discountCardPercentage, "%",
                 discount.stripTrailingZeros(),
                 promoDiscBuilder,
-                totalSumWithDiscount.setScale(2, RoundingMode.UP).stripTrailingZeros()
+                totalSumWithDiscount.setScale(2, RoundingMode.UP)
         );
 
         StringBuilder actualValue = cashReceiptInformationService

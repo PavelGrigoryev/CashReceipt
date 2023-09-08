@@ -1,6 +1,5 @@
-package ru.clevertec.cashreceipt.service.impl;
+package ru.clevertec.cashreceipt.service.factory.impl;
 
-import ru.clevertec.cashreceipt.service.UploadFileService;
 import com.github.marschall.memoryfilesystem.MemoryFileSystemBuilder;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -16,22 +15,21 @@ import java.nio.file.Path;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(MockitoExtension.class)
-class UploadFileServiceImplTest {
+class TxtUploadFileFactoryTest {
 
     @Spy
-    private UploadFileService uploadFileService = new UploadFileServiceImpl();
-
-    private static final String CASH_RECEIPT = "CashReceipt";
+    private TxtUploadFileFactory txtUploadFileFactory;
 
     @Test
-    @DisplayName("test uploadFile method should save a file.txt")
-    void testUploadFileShouldSaveFile() throws IOException {
+    @DisplayName("test uploadFileTxt method should save a file.txt")
+    void testUploadFileTxtShouldSaveFileTxt() throws IOException {
+        String cashReceipt = "Test cash receipt";
         FileSystem fileSystem = MemoryFileSystemBuilder.newEmpty().build();
 
         Path path = fileSystem.getPath("CashReceipt1.txt");
-        Path expectedValue = Files.write(path, CASH_RECEIPT.getBytes());
+        Path expectedValue = Files.write(path, cashReceipt.getBytes());
 
-        Path actualValue = uploadFileService.uploadFile(CASH_RECEIPT);
+        Path actualValue = txtUploadFileFactory.uploadFile(cashReceipt);
 
         assertThat(Files.exists(expectedValue)).isTrue();
         assertThat(Files.readString(expectedValue)).isEqualTo(Files.readString(actualValue));

@@ -33,8 +33,9 @@ public class DiscountCardServiceImpl implements DiscountCardService {
 
     @Override
     public DiscountCardDto findById(Long id) {
-        DiscountCardDto discountCardDto = discountCardMapper.toDiscountCardDto(discountCardRepository.findById(id)
-                .orElseThrow(() -> new NoSuchDiscountCardException("DiscountCard with ID " + id + " does not exist")));
+        DiscountCardDto discountCardDto = discountCardRepository.findById(id)
+                .map(discountCardMapper::toDiscountCardDto)
+                .orElseThrow(() -> new NoSuchDiscountCardException("DiscountCard with ID " + id + " does not exist"));
         log.info("findById {}", discountCardDto);
         return discountCardDto;
     }
@@ -49,11 +50,10 @@ public class DiscountCardServiceImpl implements DiscountCardService {
 
     @Override
     public DiscountCardDto findByDiscountCardNumber(String discountCardNumber) {
-        DiscountCardDto discountCardDto = discountCardMapper.toDiscountCardDto(
-                discountCardRepository.findByDiscountCardNumber(discountCardNumber)
-                        .orElseThrow(() -> new NoSuchDiscountCardException("DiscountCard with card number " +
-                                                                           discountCardNumber + " does not exist"))
-        );
+        DiscountCardDto discountCardDto = discountCardRepository.findByDiscountCardNumber(discountCardNumber)
+                .map(discountCardMapper::toDiscountCardDto)
+                .orElseThrow(() -> new NoSuchDiscountCardException("DiscountCard with card number " +
+                                                                   discountCardNumber + " does not exist"));
         log.info("findByDiscountCardNumber {}", discountCardDto);
         return discountCardDto;
     }

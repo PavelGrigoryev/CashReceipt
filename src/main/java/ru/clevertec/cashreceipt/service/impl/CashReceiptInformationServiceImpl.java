@@ -61,7 +61,7 @@ public class CashReceiptInformationServiceImpl implements CashReceiptInformation
                 discountCardPercentage, "%",
                 discount.stripTrailingZeros(),
                 promoDiscBuilder,
-                totalSumWithDiscount.setScale(2, RoundingMode.HALF_UP).stripTrailingZeros()
+                totalSumWithDiscount.setScale(2, RoundingMode.HALF_UP)
         ));
     }
 
